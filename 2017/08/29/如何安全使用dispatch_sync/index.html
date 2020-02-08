@@ -35,7 +35,7 @@
     <meta name="generator" content="hexo"/>
     
 
-    <link rel="canonical" href="http://yoursite.com/2020/02/08/如何安全使用dispatch_sync/"/>
+    <link rel="canonical" href="http://yoursite.com/2017/08/29/如何安全使用dispatch_sync/"/>
 
                  
 </head>
@@ -131,7 +131,9 @@
 
   <header class="post-header">
     <div class="post-meta">
-      <time datetime="2020-02-08T14:31:16.851Z" class="post-list__meta--date date">2020-02-08</time> &#8226; <span class="post-meta__tags tags"> </span>
+      <time datetime="2017-08-28T16:00:00.000Z" class="post-list__meta--date date">2017-08-29</time> &#8226; <span class="post-meta__tags tags">
+  <a class="tag-link" href="/tags/Tech/">Tech</a>
+ </span>
       <span class="page-pv">
        Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
       </span> 
@@ -141,9 +143,9 @@
   </header>
 
   <section class="post">
-    <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>iOS开发者在与线程打交道的方式中，使用最多的应该就是GCD框架了，没有之一。GCD将繁琐的线程抽象为了一个个队列，让开发者极易理解和使用。但其实队列的底层，依然是利用线程实现的，同样会有死锁的问题。本文将探讨如何规避<code>disptach_sync</code>接口引入的死锁问题。</p>
+    <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>iOS开发者在与线程打交道的方式中，使用最多的应该就是GCD框架了，没有之一。GCD将繁琐的线程抽象为了一个个队列，让开发者极易理解和使用。但其实队列的底层，依然是利用线程实现的，同样会有死锁的问题。本文将探讨如何规避<code>disptach_sync</code>接口引入的死锁问题。</p>
 <hr>
-<h1 id="GCD基础"><a href="#GCD基础" class="headerlink" title="GCD基础"></a>GCD基础</h1><p>GCD最基础的两个接口</p>
+<h2 id="GCD基础"><a href="#GCD基础" class="headerlink" title="GCD基础"></a>GCD基础</h2><p>GCD最基础的两个接口</p>
 <pre><code>dispatch_sync(dispatch_queue_t queue, dispatch_block_t block);
 dispatch_async(dispatch_queue_t queue, dispatch_block_t block);
 </code></pre><p>第一个参数<code>queue</code>为队列对象，第二个参数<code>block</code>为block对象。这两个接口可以将任务<code>block</code>扔到队列<code>queue</code>中去执行。</p>
@@ -232,23 +234,22 @@ dispatch_sync(queue0, ^{
 <section class="read-more">
            
     
-        
-        
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">Older Post</span>
-                <h2 class="post-list__post-title post-title"><a href="/2018/09/07/FirstNight/" title="Secret Mood">Secret Mood</a></h2>
+                <span class="read-more-item-dim">Newer Post</span>
+                <h2 class="post-list__post-title post-title"><a href="/2017/12/01/hello-world/" title="Hello World">Hello World</a></h2>
                 <p class="excerpt">
                 
-                
-欢迎使用Secret Mood。
-
-
+                Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in 
                 &hellip;
                 </p>
-                <div class="post-list__meta"><time datetime="2018-09-07T14:16:11.846Z" class="post-list__meta--date date">2018-09-07</time> &#8226; <span class="post-list__meta--tags tags">于 </span><a class="btn-border-small" href="/2018/09/07/FirstNight/">继续阅读</a></div>
-                       
+                <div class="post-list__meta"><time datetime="2017-11-30T16:00:00.000Z" class="post-list__meta--date date">2017-12-01</time> &#8226; <span class="post-list__meta--tags tags">于 
+  <a class="tag-link" href="/tags/Tutorial/">Tutorial</a>
+</span><a class="btn-border-small" href="/2017/12/01/hello-world/">继续阅读</a></div>
+                           
             </div>
+        
+        
         
      
    
