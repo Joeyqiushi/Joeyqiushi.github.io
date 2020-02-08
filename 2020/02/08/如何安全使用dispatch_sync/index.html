@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="z">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    
+    <title>Joey Xu | 人淡如菊</title>
+    <meta name="renderer" content="webkit">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta name="description" content="Hi, this is Joey, welcome to my website!">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Joey Xu | 人淡如菊">
+    <meta name="twitter:description" content="Hi, this is Joey, welcome to my website!">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Joey Xu | 人淡如菊">
+    <meta property="og:description" content="Hi, this is Joey, welcome to my website!">
+
+    
+    <meta name="author" content="Joey Xu">
+    
+    <link rel="stylesheet" href="/css/vno.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+
+    
+    <link rel="icon" href="/images/avatar-small.png">
+    
+
+    <meta name="generator" content="hexo"/>
+    
+
+    <link rel="canonical" href="http://yoursite.com/2020/02/08/如何安全使用dispatch_sync/"/>
+
+                 
+</head>
+
+<body class="home-template no-js">
+    <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+    <script src="/js/main.js"></script>
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+<header class="panel-cover panel-cover--collapsed" style="background-image: url(/images/background-cover.jpg)">
+  <div class="panel-main">
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/" title="前往 Joey Xu 的主页"><img src="/images/avatar.jpg" width="80" alt="Joey Xu logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage for Joey Xu">Joey Xu</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">人淡如菊</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Hi, this is Joey, welcome to my website!</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+
+        <div class="navigation-wrapper">
+          <div>
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+              <li class="navigation__item"><a href="/#blog" title="Visit the blog" class="blog-button">Blog</a></li>
+            
+            </ul>
+          </nav>
+          </div>
+          <div>
+          <nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  <!-- Weibo-->
+  
+  <li class="navigation__item">
+    <a href="https://weibo.com/Joeyqiushi" title="Weibo" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li> 
+
+
+  <!-- Github -->
+  
+  <li class="navigation__item">
+    <a href="https://github.com/Joeyqiushi" title="GitHub" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+
+
+<!-- Stack Overflow -->
+        
+
+  <!-- Google Plus -->
+  
+
+<!-- Facebook -->
+
+  
+<!-- Twitter -->
+
+  
+
+
+
+  </ul>
+</nav>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay cover-purple"></div>
+  </div> 
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single">
+
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2020-02-08T14:31:16.851Z" class="post-list__meta--date date">2020-02-08</time> &#8226; <span class="post-meta__tags tags"> </span>
+      <span class="page-pv">
+       Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
+      </span> 
+   
+    </div>
+    <h1 class="post-title"></h1>
+  </header>
+
+  <section class="post">
+    <p>#概述<br>iOS开发者在与线程打交道的方式中，使用最多的应该就是GCD框架了，没有之一。GCD将繁琐的线程抽象为了一个个队列，让开发者极易理解和使用。但其实队列的底层，依然是利用线程实现的，同样会有死锁的问题。本文将探讨如何规避<code>disptach_sync</code>接口引入的死锁问题。</p>
+<hr>
+<p>#GCD基础</p>
+<p>GCD最基础的两个接口</p>
+<pre><code>dispatch_sync(dispatch_queue_t queue, dispatch_block_t block);
+dispatch_async(dispatch_queue_t queue, dispatch_block_t block);
+</code></pre><p>第一个参数<code>queue</code>为队列对象，第二个参数<code>block</code>为block对象。这两个接口可以将任务<code>block</code>扔到队列<code>queue</code>中去执行。</p>
+<p>开发者使用最频繁的，就是在子线程环境下，需要做UI更新时，我们可以将任务扔到主线程去执行，</p>
+<pre><code>dispatch_sync(dispatch_get_main_queue(), block);
+dispatch_async(dispatch_get_main_queue(), block);
+</code></pre><p>而<code>dispatch_sync(dispatch_get_main_queue(), block)</code>有可能引入死锁的问题。</p>
+<p>#####async <em>VS.</em> sync</p>
+<p><code>disptach_async</code>是异步扔一个<code>block</code>到<code>queue</code>中，即扔完我就不管了，继续执行我的下一行代码。实际上当下一行代码执行时，这个<code>block</code>还未执行，只是入了队列<code>queue</code>，<code>queue</code>会排队来执行这个<code>block</code>。</p>
+<p>而<code>disptach_sync</code>则是同步扔一个<code>block</code>到<code>queue</code>中，即扔了我就等着，等到<code>queue</code>排队把这个<code>block</code>执行完了之后，才继续执行下一行代码。</p>
+<hr>
+<p>#为什么要使用sync<br><code>disptach_sync</code>主要用于代码上下文对时序有强要求的场景。简单点说，就是下一行代码的执行，依赖于上一行代码的结果。例如说，我们需要在子线程中读取一个<code>image</code>对象，使用接口<code>[UIImage imageNamed:]</code>，但<code>imageNamed:</code>实际上在iOS9以后才是线程安全的，iOS9之前都需要在主线程获取。所以，我们需要从子线程切换到主线程获取<code>image</code>，然后再切回子线程拿到这个<code>image</code>，</p>
+<pre><code>// ...currently in a subthread
+__block UIImage *image;
+dispatch_sync_on_main_queue(^{
+    image = [UIImage imageNamed:@&quot;Resource/img&quot;];
+});
+attachment.image = image;
+</code></pre><p>这里我们必须使用<code>sync</code>。</p>
+<hr>
+<p>#为什么会死锁</p>
+<p>假设当前我们的代码正在<code>queue0</code>中执行。然后我们调用<code>disptach_sync</code>将一个任务<code>block1</code>扔到<code>queue0</code>中执行，</p>
+<pre><code>// ... currently in queue0 or queue0&apos;s corresponding thread.
+dispatch_sync(queue0, block1);
+</code></pre><p>这时，<code>dispatch_sync</code>将等待<code>queue0</code>排队执行完<code>block1</code>，然后才能继续执行下一行代码。But，当前代码执行的环境也是<code>queue0</code>。假设当前执行的任务为<code>block0</code>。也就是说，<code>block0</code>在执行到一半时，需要等到自己的下一个任务<code>block1</code>执行完，自己才能继续执行。而<code>block1</code>排队在后面，需要等<code>block0</code>执行完才能执行。这时死锁就产生了，<code>block0</code>和<code>block1</code>互相等待执行，当前线程就卡死在<code>dispatch_sync</code>这行代码处。</p>
+<p>我们发现的卡死问题，一般都是主线程死锁。一种较为常见的情况是，本身就已经在主线程了，还同步向主线程扔了一个任务：</p>
+<pre><code>// ... currently in the main thread
+dispatch_sync(dispatch_get_main_queue(), block);
+</code></pre><hr>
+<p>#安全方法</p>
+<p>YYKit中提供了一个同步扔任务到主线程的安全方法：</p>
+<pre><code>/**
+ Submits a block for execution on a main queue and waits until the block completes.
+*/
+static inline void dispatch_sync_on_main_queue(void (^block)()) {
+    if (pthread_main_np()) {
+        block();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), block);
+    }
+}
+</code></pre><p>其方式就是在扔任务给主线程之前，先检查当前线程是否已经是主线程，如果是，就不用调用GCD的队列调度接口<code>dispatch_sync</code>了，直接执行即可；如果不是主线程，那么调用GCD的<code>dispatch_sync</code>也不会卡死。</p>
+<p>但事实上并不是这样的，<code>dispatch_sync_on_main_queue</code>也可能会卡死，<strong>这个安全接口并不安全</strong>。这个接口只能保证两个<code>block</code>之间不因互相等待而死锁。多于两个<code>block</code>的互相依赖就束手无策了。</p>
+<p>举个例子，假设<code>queue0</code>是一个子线程的队列：</p>
+<pre><code>/* block0 */
+// ... currently in the main thread.
+dispatch_sync(queue0, ^{
+    /* block1 */
+    // ... currently in queue0&apos;s corresponding subthread.
+    dispatch_sync_on_main_queue(^{
+        /* block2 */
+    });
+});
+</code></pre><p>在上述代码中，<code>block0</code>正在主线程中执行，并且同步等待子线程执行完<code>block1</code>。<code>block1</code>又同步等待主线程执行完<code>block2</code>。而当前主线程正在执行<code>block0</code>，即<code>block2</code>的执行需要等到<code>block0</code>执行完。这样就成了<code>block0</code>–&gt;<code>block1</code>–&gt;<code>block2</code>–&gt;<code>block0</code>…这样一个循环等待，即死锁。由于<code>block1</code>的环境是子线程，所以安全API的线程判断不起任何作用。</p>
+<p>另举一个例子：</p>
+<pre><code>/* block0 */
+// ... currently in the main thread.
+[[NSNotificationCenter defaultCenter] postNotificationName:@&quot;aNotification&quot; object:nil];
+
+// ... in another context
+[[NSNotificationCenter defaultCenter] addObserverForName:@&quot;aNotification&quot;
+                                                  object:nil
+                                                   queue:queue0
+                                              usingBlock:^(NSNotification * _Nonnull note) {
+                                                  /* block1 */
+                                                  // ... currently in queue0&apos;s corresponding subthread.
+                                                  dispatch_sync_on_main_queue(^{
+                                                      /* block2 */
+                                                  });
+                                              }];
+</code></pre><p>由于通知<code>NSNotification</code>的执行是同步的，这里会出现和上一例一样的死锁情况：<code>block0</code>–&gt;<code>block1</code>–&gt;<code>block2</code>–&gt;<code>block0</code>…</p>
+<hr>
+<p>#如何定位死锁问题</p>
+<p>#####1.死锁监测和堆栈上报机制<br>要定位死锁的问题，我们需要知道在哪一行代码上死锁了，以及为什么会出现死锁。通常只要知道哪一行代码死锁了，我们就能通过代码分析出问题所在了。所以，如果死锁的时候，我们能够把堆栈上报上来，就能知道哪一行代码死锁了。这里需要有完善的<strong>死锁监测和堆栈上报机制</strong>。</p>
+<p>#####2.打印日志<br>如果暂时没有人力或者技术支撑你去搭建完善的死锁监测和堆栈上报机制，那么你可以做一件简单的事情以协助你定位问题，那就是<strong>打印日志</strong>。在<code>dispatch_sync</code>或者加锁之前，打印一条日志。这样在用户反馈问题，或者测试重现问题的时候，提取日志便可分析出卡死的代码处。</p>
+<hr>
+<p>#如何安全使用dispatch_sync</p>
+<p>答案是，<strong>尽量不要使用</strong>。没有哪一个接口是可以保证绝对安全的。必须要使用<code>dispatch_sync</code>的时候，尽量使用<code>dispatch_sync_on_main_queue</code>这个API。</p>
+<hr>
+<p>若有发现问题，或是更好的建议，欢迎私信或者评论:)</p>
+
+  </section>
+
+</article>
+
+<section class="read-more">
+           
+    
+        
+        
+               
+            <div class="read-more-item">
+                <span class="read-more-item-dim">Older Post</span>
+                <h2 class="post-list__post-title post-title"><a href="/2018/09/07/FirstNight/" title="Secret Mood">Secret Mood</a></h2>
+                <p class="excerpt">
+                
+                
+欢迎使用Secret Mood。
+
+
+                &hellip;
+                </p>
+                <div class="post-list__meta"><time datetime="2018-09-07T14:16:11.846Z" class="post-list__meta--date date">2018-09-07</time> &#8226; <span class="post-list__meta--tags tags">于 </span><a class="btn-border-small" href="/2018/09/07/FirstNight/">继续阅读</a></div>
+                       
+            </div>
+        
+     
+   
+   
+  
+</section>
+
+  
+
+
+            <footer class="footer">
+    <span class="footer__copyright">
+        &copy; 2020 Joey Xu - 本站点采用 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>
+       
+    </span>
+    <span class="footer__copyright">
+             - 基于 <a href="http://hexo.io">Hexo</a> 搭建，使用 <a href="https://github.com/monniya/hexo-theme-new-vno ">new-vno</a> 主题，由<a href="https://monniya.com ">@Monniya</a> 修改自 <a href="https://github.com/lenbo-ma/hexo-theme-vno" target="_blank">Vno</a>, 原创出自<a href="http://github.com/onevcat/vno" target="_blank">onevcat</a>
+         </span>
+       
+    
+    
+</footer>
+
+
+        </div>
+    </div>
+
+     
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-78918255-1', 'auto');
+	ga('send', 'pageview');
+</script>
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?9cdad07c755fa23f6aced510c6760e87";
+            var s = document.getElementsByTagName("script")[0]; 
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+
+
+    <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    
+</body>
+</html>
