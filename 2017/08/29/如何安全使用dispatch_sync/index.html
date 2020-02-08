@@ -67,7 +67,7 @@
           <div>
           <nav class="cover-navigation cover-navigation--primary">
             <ul class="navigation">
-              <li class="navigation__item"><a href="/#blog" title="Visit the blog" class="blog-button">Blog</a></li>
+              <li class="navigation__item"><a href="/#blog" title="Blogを読む" class="blog-button">Blog</a></li>
             
             </ul>
           </nav>
@@ -135,7 +135,7 @@
   <a class="tag-link" href="/tags/Tech/">Tech</a>
  </span>
       <span class="page-pv">
-       Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
+       No. <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
       </span> 
    
     </div>
@@ -153,8 +153,7 @@ dispatch_async(dispatch_queue_t queue, dispatch_block_t block);
 <pre><code>dispatch_sync(dispatch_get_main_queue(), block);
 dispatch_async(dispatch_get_main_queue(), block);
 </code></pre><p>而<code>dispatch_sync(dispatch_get_main_queue(), block)</code>有可能引入死锁的问题。</p>
-<p>#####async <em>VS.</em> sync</p>
-<p><code>disptach_async</code>是异步扔一个<code>block</code>到<code>queue</code>中，即扔完我就不管了，继续执行我的下一行代码。实际上当下一行代码执行时，这个<code>block</code>还未执行，只是入了队列<code>queue</code>，<code>queue</code>会排队来执行这个<code>block</code>。</p>
+<h5 id="async-VS-sync"><a href="#async-VS-sync" class="headerlink" title="async VS. sync"></a>async <em>VS.</em> sync</h5><p><code>disptach_async</code>是异步扔一个<code>block</code>到<code>queue</code>中，即扔完我就不管了，继续执行我的下一行代码。实际上当下一行代码执行时，这个<code>block</code>还未执行，只是入了队列<code>queue</code>，<code>queue</code>会排队来执行这个<code>block</code>。</p>
 <p>而<code>disptach_sync</code>则是同步扔一个<code>block</code>到<code>queue</code>中，即扔了我就等着，等到<code>queue</code>排队把这个<code>block</code>执行完了之后，才继续执行下一行代码。</p>
 <hr>
 <p>#为什么要使用sync<br><code>disptach_sync</code>主要用于代码上下文对时序有强要求的场景。简单点说，就是下一行代码的执行，依赖于上一行代码的结果。例如说，我们需要在子线程中读取一个<code>image</code>对象，使用接口<code>[UIImage imageNamed:]</code>，但<code>imageNamed:</code>实际上在iOS9以后才是线程安全的，iOS9之前都需要在主线程获取。所以，我们需要从子线程切换到主线程获取<code>image</code>，然后再切回子线程拿到这个<code>image</code>，</p>
@@ -166,8 +165,7 @@ dispatch_sync_on_main_queue(^{
 attachment.image = image;
 </code></pre><p>这里我们必须使用<code>sync</code>。</p>
 <hr>
-<p>#为什么会死锁</p>
-<p>假设当前我们的代码正在<code>queue0</code>中执行。然后我们调用<code>disptach_sync</code>将一个任务<code>block1</code>扔到<code>queue0</code>中执行，</p>
+<h2 id="为什么会死锁"><a href="#为什么会死锁" class="headerlink" title="为什么会死锁"></a>为什么会死锁</h2><p>假设当前我们的代码正在<code>queue0</code>中执行。然后我们调用<code>disptach_sync</code>将一个任务<code>block1</code>扔到<code>queue0</code>中执行，</p>
 <pre><code>// ... currently in queue0 or queue0&apos;s corresponding thread.
 dispatch_sync(queue0, block1);
 </code></pre><p>这时，<code>dispatch_sync</code>将等待<code>queue0</code>排队执行完<code>block1</code>，然后才能继续执行下一行代码。But，当前代码执行的环境也是<code>queue0</code>。假设当前执行的任务为<code>block0</code>。也就是说，<code>block0</code>在执行到一半时，需要等到自己的下一个任务<code>block1</code>执行完，自己才能继续执行。而<code>block1</code>排队在后面，需要等<code>block0</code>执行完才能执行。这时死锁就产生了，<code>block0</code>和<code>block1</code>互相等待执行，当前线程就卡死在<code>dispatch_sync</code>这行代码处。</p>
@@ -175,7 +173,7 @@ dispatch_sync(queue0, block1);
 <pre><code>// ... currently in the main thread
 dispatch_sync(dispatch_get_main_queue(), block);
 </code></pre><hr>
-<p>#安全方法</p>
+<p>##安全方法</p>
 <p>YYKit中提供了一个同步扔任务到主线程的安全方法：</p>
 <pre><code>/**
  Submits a block for execution on a main queue and waits until the block completes.
@@ -236,7 +234,7 @@ dispatch_sync(queue0, ^{
     
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">Newer Post</span>
+                <span class="read-more-item-dim">新しい記事</span>
                 <h2 class="post-list__post-title post-title"><a href="/2017/12/01/hello-world/" title="Hello World">Hello World</a></h2>
                 <p class="excerpt">
                 
