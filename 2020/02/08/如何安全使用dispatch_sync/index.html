@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     
-    <title>Joey Xu | 人淡如菊</title>
+    <title>如何安全使用dispatch_sync | Joey Xu</title>
     <meta name="renderer" content="webkit">
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -15,11 +15,11 @@
     <meta name="description" content="Hi, this is Joey, welcome to my website!">
 
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Joey Xu | 人淡如菊">
+    <meta name="twitter:title" content="如何安全使用dispatch_sync | Joey Xu">
     <meta name="twitter:description" content="Hi, this is Joey, welcome to my website!">
 
     <meta property="og:type" content="article">
-    <meta property="og:title" content="Joey Xu | 人淡如菊">
+    <meta property="og:title" content="如何安全使用dispatch_sync | Joey Xu">
     <meta property="og:description" content="Hi, this is Joey, welcome to my website!">
 
     
@@ -137,14 +137,13 @@
       </span> 
    
     </div>
-    <h1 class="post-title"></h1>
+    <h1 class="post-title">如何安全使用dispatch_sync</h1>
   </header>
 
   <section class="post">
-    <p>#概述<br>iOS开发者在与线程打交道的方式中，使用最多的应该就是GCD框架了，没有之一。GCD将繁琐的线程抽象为了一个个队列，让开发者极易理解和使用。但其实队列的底层，依然是利用线程实现的，同样会有死锁的问题。本文将探讨如何规避<code>disptach_sync</code>接口引入的死锁问题。</p>
+    <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>iOS开发者在与线程打交道的方式中，使用最多的应该就是GCD框架了，没有之一。GCD将繁琐的线程抽象为了一个个队列，让开发者极易理解和使用。但其实队列的底层，依然是利用线程实现的，同样会有死锁的问题。本文将探讨如何规避<code>disptach_sync</code>接口引入的死锁问题。</p>
 <hr>
-<p>#GCD基础</p>
-<p>GCD最基础的两个接口</p>
+<h1 id="GCD基础"><a href="#GCD基础" class="headerlink" title="GCD基础"></a>GCD基础</h1><p>GCD最基础的两个接口</p>
 <pre><code>dispatch_sync(dispatch_queue_t queue, dispatch_block_t block);
 dispatch_async(dispatch_queue_t queue, dispatch_block_t block);
 </code></pre><p>第一个参数<code>queue</code>为队列对象，第二个参数<code>block</code>为block对象。这两个接口可以将任务<code>block</code>扔到队列<code>queue</code>中去执行。</p>
