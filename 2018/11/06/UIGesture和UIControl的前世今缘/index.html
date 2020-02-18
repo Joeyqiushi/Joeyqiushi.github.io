@@ -67,7 +67,7 @@
           <div>
           <nav class="cover-navigation cover-navigation--primary">
             <ul class="navigation">
-              <li class="navigation__item"><a href="/#blog" title="Blogを読む" class="blog-button">Blog</a></li>
+              <li class="navigation__item"><a href="/#blog" title="Visit the blog" class="blog-button">Blog</a></li>
             
             </ul>
           </nav>
@@ -135,7 +135,7 @@
   <a class="tag-link" href="/tags/Tech/">Tech</a>
  </span>
       <span class="page-pv">
-       No. <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
+       Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
       </span> 
    
     </div>
@@ -201,8 +201,9 @@
 <p>虽然 UIGesture 和 UIControl 有两套完全不同的 touch 处理机制，但其第一步确认响应链的过程是共享的。它们都通过 HitTest 来确认响应链。</p>
 <p>除此之外，在触摸响应事件的处理中， UIGesture 比 UIControl 的优先级更高。为什么这么说呢？因为在响应链中只要有一个 UIGesture 拿到响应权，所有的 UIControl 的触摸事件都会被 cancel 掉，哪怕这个 UIControl 所处的视图层级比 UIGesture 的视图更高。简单点说， UIGesture 有权在其响应时中止 UIControl 的识别流程。</p>
 <p>按上面所说，那么只要响应链中有 tap gesture ， UIButton 的点击事件就不会响应，取而代之的是 tap gesture 的响应。但事实好像并不是这样的。我们在一个含有 tap gesture 的 view 上添加一个 UIButton ，点击按钮时响应的是 UIButton 。为什么呢？事实上，这个 tap gesture 并没有获得响应权。问题出在 UIGestureRecognizerDelegate 的 <code>[gestureRecognizerShouldBegin:]</code> 阶段。在 <code>[gestureRecognizerShouldBegin:]</code> 阶段首先被调用的是被触摸视图的 <code>[gestureRecognizerShouldBegin:]</code> 方法，其参数是我们的 tap gesture 。而 UIButton 的 <code>[gestureRecognizerShouldBegin:]</code> 实现中，指定对非添加在自己身上的 tap gesture ，返回 false ，即不可响应。所以点击最终响应的是 UIButton ，其下面视图的 tap gesture 得不到响应。如果读者重写 UIButton 的 <code>[gestureRecognizerShouldBegin:]</code> 方法，让其返回 true ，会发现点击 UIButton 时， UIButton 没有响应，响应的却是其父视图的 tap gesture 。这也说明了 UIGesture 比 UIControl 的优先级更高。另外， UIButton 的 <code>[gestureRecognizerShouldBegin:]</code> 实现中没有对其他手势做限制，即返回的 true ，所以你在 UIButton 上双击、滑动时，这些手势都能得到其父视图的识别。</p>
-<p><strong>总结一下，UIGesture 和 UIControl 的第一步响应链确认过程是一样的，都是 HitTest 。但他们的触摸识别机制是完全独立的两套。并且 UIGesture 的触摸事件响应流程的优先级高于 UIControl 。当 UIGesture 最终拿到响应权时，所有 UIControl 的触摸事件都会被立刻 cancel 掉，即中止识别。</strong></p>
-<h2 id="In-The-End"><a href="#In-The-End" class="headerlink" title="In The End"></a>In The End</h2><p>希望本文对你在手势的使用和理解上有所帮助。<br>欢迎所有的问题和建议。<br>Have a good day! :)</p>
+<h2 id="In-The-End"><a href="#In-The-End" class="headerlink" title="In The End"></a>In The End</h2><p><strong>总结一下，UIGesture 和 UIControl 的第一步响应链确认过程是一样的，都是 HitTest 。但他们的触摸识别机制是完全独立的两套。并且 UIGesture 的触摸事件响应流程的优先级高于 UIControl 。当 UIGesture 最终拿到响应权时，所有 UIControl 的触摸事件都会被立刻 cancel 掉，即中止识别。</strong></p>
+<hr>
+<p>Have a good day! :)</p>
 
   </section>
 
@@ -215,17 +216,20 @@
         
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">以前の記事</span>
-                <h2 class="post-list__post-title post-title"><a href="/2018/09/07/FirstNight/" title="Secret Mood">Secret Mood</a></h2>
+                <span class="read-more-item-dim">Older Post</span>
+                <h2 class="post-list__post-title post-title"><a href="/2018/10/17/BC架构探索之路/" title="BC架构探索之路">BC架构探索之路</a></h2>
                 <p class="excerpt">
                 
-                
-欢迎使用Secret Mood。
+                做iOS也有些年头了，最近把项目核心模块的架构重新设计了一番，这里做一些记录。首先，我们要对基础的设计模式有一定的认知。这些基础的设计模式，便是MVC、MVVM、VIPER。
+MVC、MVVM
+关于 MVC ，斯坦福的 Paul 老头有一张经典的图示，相信大部分iOSer都看过：
 
-
+当有多个模块时，
                 &hellip;
                 </p>
-                <div class="post-list__meta"><time datetime="2018-09-07T14:16:11.846Z" class="post-list__meta--date date">2018-09-07</time> &#8226; <span class="post-list__meta--tags tags">于 </span><a class="btn-border-small" href="/2018/09/07/FirstNight/">继续阅读</a></div>
+                <div class="post-list__meta"><time datetime="2018-10-16T16:00:00.000Z" class="post-list__meta--date date">2018-10-17</time> &#8226; <span class="post-list__meta--tags tags">于 
+  <a class="tag-link" href="/tags/Tech/">Tech</a>
+</span><a class="btn-border-small" href="/2018/10/17/BC架构探索之路/">继续阅读</a></div>
                        
             </div>
         
