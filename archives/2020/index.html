@@ -133,69 +133,13 @@
   
     
     <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/11/06/UIGesture和UIControl的前世今缘/" title="link to post.title">UIGesture和UIControl的前世今缘</a></h2>
+      <h2 class="post-list__post-title post-title"><a href="/2020/04/17/选择GCD还是NSTimer？/" title="link to post.title"></a></h2>
       <p class="excerpt">
     
-      最近发现很多同学都搞不清楚 UIGesture 和 UIControl 的正确使用姿势。即便是做了多年 iOS 开发的 senior engineer 也搞不清楚这整个脉络。于是我决定写一篇文章阐述一下这其中的奥妙。
-一般来说，我们使用 UIGesture 和 UIControl 的场景大多比较简单。以 UIGesture 为例，123UITapGestureRecognizer *tap = [
+      
     &hellip;
       </p>
-      <div class="post-list__meta"><time datetime="2018-11-05T16:00:00.000Z" class="post-list__meta--date date">2018-11-06</time> &#8226; <span class="post-list__meta--tags tags">
-  <a class="tag-link" href="/tags/Tech/">Tech</a>
-</span><a class="btn-border-small" href="/2018/11/06/UIGesture和UIControl的前世今缘/">继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-  
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/10/17/BC架构探索之路/" title="link to post.title">BC架构探索之路</a></h2>
-      <p class="excerpt">
-    
-      做iOS也有些年头了，最近把项目核心模块的架构重新设计了一番，这里做一些记录。首先，我们要对基础的设计模式有一定的认知。这些基础的设计模式，便是MVC、MVVM、VIPER。
-MVC、MVVM
-关于 MVC ，斯坦福的 Paul 老头有一张经典的图示，相信大部分iOSer都看过：
-
-当有多个模块时，我们需要有多个 MVC 互相配合：
-
-可以看到，多个模块之间的交互都是通过 Controller 层
-    &hellip;
-      </p>
-      <div class="post-list__meta"><time datetime="2018-10-16T16:00:00.000Z" class="post-list__meta--date date">2018-10-17</time> &#8226; <span class="post-list__meta--tags tags">
-  <a class="tag-link" href="/tags/Tech/">Tech</a>
-</span><a class="btn-border-small" href="/2018/10/17/BC架构探索之路/">继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-  
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/08/29/如何安全使用dispatch_sync/" title="link to post.title">如何安全使用dispatch_sync</a></h2>
-      <p class="excerpt">
-    
-      概述iOS开发者在与线程打交道的方式中，使用最多的应该就是GCD框架了，没有之一。GCD将繁琐的线程抽象为了一个个队列，让开发者极易理解和使用。但其实队列的底层，依然是利用线程实现的，同样会有死锁的问题。本文将探讨如何规避disptach_sync接口引入的死锁问题。
-
-GCD基础GCD最基础的两个接口
-dispatch_sync(dispatch_queue_t queue, dispatch_
-    &hellip;
-      </p>
-      <div class="post-list__meta"><time datetime="2017-08-28T16:00:00.000Z" class="post-list__meta--date date">2017-08-29</time> &#8226; <span class="post-list__meta--tags tags">
-  <a class="tag-link" href="/tags/Tech/">Tech</a>
-</span><a class="btn-border-small" href="/2017/08/29/如何安全使用dispatch_sync/">继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-  
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2015/08/01/NSDateFormatter最佳实践/" title="link to post.title">NSDateFormatter最佳实践</a></h2>
-      <p class="excerpt">
-    
-      本文介绍NSDateFormatter的性能瓶颈，以及如何解决性能问题。
-
-分别用NSDateFormatter和C的localtime()方法去将时间转化成一个可读的字符串。转化1024*10次，然后对比时间。注：localtime()有不可重入和线程安全的问题，可用localtime_r替换。123456789101112131415161718192021222324252627282930
-    &hellip;
-      </p>
-      <div class="post-list__meta"><time datetime="2015-07-31T16:00:00.000Z" class="post-list__meta--date date">2015-08-01</time> &#8226; <span class="post-list__meta--tags tags">
-  <a class="tag-link" href="/tags/Tech/">Tech</a>
-</span><a class="btn-border-small" href="/2015/08/01/NSDateFormatter最佳实践/">继续阅读</a></div>
+      <div class="post-list__meta"><time datetime="2020-04-17T15:07:35.974Z" class="post-list__meta--date date">2020-04-17</time> &#8226; <span class="post-list__meta--tags tags"></span><a class="btn-border-small" href="/2020/04/17/选择GCD还是NSTimer？/">继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
   
