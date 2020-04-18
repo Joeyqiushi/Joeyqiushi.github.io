@@ -67,7 +67,7 @@
           <div>
           <nav class="cover-navigation cover-navigation--primary">
             <ul class="navigation">
-              <li class="navigation__item"><a href="/#blog" title="Visit the blog" class="blog-button">Blog</a></li>
+              <li class="navigation__item"><a href="/#blog" title="Blogを読む" class="blog-button">Blog</a></li>
             
             </ul>
           </nav>
@@ -135,7 +135,7 @@
   <a class="tag-link" href="/tags/Tech/">Tech</a>
  </span>
       <span class="page-pv">
-       Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
+       No. <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
       </span> 
    
     </div>
@@ -155,7 +155,6 @@ dispatch_async(dispatch_get_main_queue(), block);
 </code></pre><p>而<code>dispatch_sync(dispatch_get_main_queue(), block)</code>有可能引入死锁的问题。</p>
 <h4 id="async-VS-sync"><a href="#async-VS-sync" class="headerlink" title="async VS. sync"></a>async <em>VS.</em> sync</h4><p><code>disptach_async</code>是异步扔一个<code>block</code>到<code>queue</code>中，即扔完我就不管了，继续执行我的下一行代码。实际上当下一行代码执行时，这个<code>block</code>还未执行，只是入了队列<code>queue</code>，<code>queue</code>会排队来执行这个<code>block</code>。</p>
 <p>而<code>disptach_sync</code>则是同步扔一个<code>block</code>到<code>queue</code>中，即扔了我就等着，等到<code>queue</code>排队把这个<code>block</code>执行完了之后，才继续执行下一行代码。</p>
-<hr>
 <h2 id="为什么要使用sync"><a href="#为什么要使用sync" class="headerlink" title="为什么要使用sync"></a>为什么要使用sync</h2><p><code>disptach_sync</code>主要用于代码上下文对时序有强要求的场景。简单点说，就是下一行代码的执行，依赖于上一行代码的结果。例如说，我们需要在子线程中读取一个<code>image</code>对象，使用接口<code>[UIImage imageNamed:]</code>，但<code>imageNamed:</code>实际上在iOS9以后才是线程安全的，iOS9之前都需要在主线程获取。所以，我们需要从子线程切换到主线程获取<code>image</code>，然后再切回子线程拿到这个<code>image</code>，</p>
 <pre><code>// ...currently in a subthread
 __block UIImage *image;
@@ -164,7 +163,6 @@ dispatch_sync_on_main_queue(^{
 });
 attachment.image = image;
 </code></pre><p>这里我们必须使用<code>sync</code>。</p>
-<hr>
 <h2 id="为什么会死锁"><a href="#为什么会死锁" class="headerlink" title="为什么会死锁"></a>为什么会死锁</h2><p>假设当前我们的代码正在<code>queue0</code>中执行。然后我们调用<code>disptach_sync</code>将一个任务<code>block1</code>扔到<code>queue0</code>中执行，</p>
 <pre><code>// ... currently in queue0 or queue0&apos;s corresponding thread.
 dispatch_sync(queue0, block1);
@@ -172,8 +170,7 @@ dispatch_sync(queue0, block1);
 <p>我们发现的卡死问题，一般都是主线程死锁。一种较为常见的情况是，本身就已经在主线程了，还同步向主线程扔了一个任务：</p>
 <pre><code>// ... currently in the main thread
 dispatch_sync(dispatch_get_main_queue(), block);
-</code></pre><hr>
-<h2 id="安全方法"><a href="#安全方法" class="headerlink" title="安全方法"></a>安全方法</h2><p>YYKit中提供了一个同步扔任务到主线程的安全方法：</p>
+</code></pre><h2 id="安全方法"><a href="#安全方法" class="headerlink" title="安全方法"></a>安全方法</h2><p>YYKit中提供了一个同步扔任务到主线程的安全方法：</p>
 <pre><code>/**
  Submits a block for execution on a main queue and waits until the block completes.
 */
@@ -214,13 +211,9 @@ dispatch_sync(queue0, ^{
                                                   });
                                               }];
 </code></pre><p>由于通知<code>NSNotification</code>的执行是同步的，这里会出现和上一例一样的死锁情况：<code>block0</code>–&gt;<code>block1</code>–&gt;<code>block2</code>–&gt;<code>block0</code>…</p>
-<hr>
 <h2 id="如何定位死锁问题"><a href="#如何定位死锁问题" class="headerlink" title="如何定位死锁问题"></a>如何定位死锁问题</h2><h4 id="1-死锁监测和堆栈上报机制"><a href="#1-死锁监测和堆栈上报机制" class="headerlink" title="1.死锁监测和堆栈上报机制"></a>1.死锁监测和堆栈上报机制</h4><p>要定位死锁的问题，我们需要知道在哪一行代码上死锁了，以及为什么会出现死锁。通常只要知道哪一行代码死锁了，我们就能通过代码分析出问题所在了。所以，如果死锁的时候，我们能够把堆栈上报上来，就能知道哪一行代码死锁了。这里需要有完善的<strong>死锁监测和堆栈上报机制</strong>。</p>
 <h4 id="2-打印日志"><a href="#2-打印日志" class="headerlink" title="2.打印日志"></a>2.打印日志</h4><p>如果暂时没有人力或者技术支撑你去搭建完善的死锁监测和堆栈上报机制，那么你可以做一件简单的事情以协助你定位问题，那就是<strong>打印日志</strong>。在<code>dispatch_sync</code>或者加锁之前，打印一条日志。这样在用户反馈问题，或者测试重现问题的时候，提取日志便可分析出卡死的代码处。</p>
-<hr>
 <h2 id="如何安全使用dispatch-sync"><a href="#如何安全使用dispatch-sync" class="headerlink" title="如何安全使用dispatch_sync"></a>如何安全使用dispatch_sync</h2><p>答案是，<strong>尽量不要使用</strong>。没有哪一个接口是可以保证绝对安全的。必须要使用<code>dispatch_sync</code>的时候，尽量使用<code>dispatch_sync_on_main_queue</code>这个API。</p>
-<hr>
-<p>若有发现问题，或是更好的建议，欢迎私信或者评论:)</p>
 
   </section>
 
@@ -231,7 +224,7 @@ dispatch_sync(queue0, ^{
     
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">Newer Post</span>
+                <span class="read-more-item-dim">新しい記事</span>
                 <h2 class="post-list__post-title post-title"><a href="/2018/10/17/BC架构探索之路/" title="BC架构探索之路">BC架构探索之路</a></h2>
                 <p class="excerpt">
                 
@@ -250,7 +243,7 @@ MVC、MVVM关于 MVC ，斯坦福的 Paul 老头有一张经典的图示，相�
         
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">Older Post</span>
+                <span class="read-more-item-dim">以前の記事</span>
                 <h2 class="post-list__post-title post-title"><a href="/2015/08/01/NSDateFormatter最佳实践/" title="NSDateFormatter最佳实践">NSDateFormatter最佳实践</a></h2>
                 <p class="excerpt">
                 
