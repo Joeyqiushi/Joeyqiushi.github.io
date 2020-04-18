@@ -67,7 +67,7 @@
           <div>
           <nav class="cover-navigation cover-navigation--primary">
             <ul class="navigation">
-              <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">Blog</a></li>
+              <li class="navigation__item"><a href="/#blog" title="Visit the blog" class="blog-button">Blog</a></li>
             
             </ul>
           </nav>
@@ -79,7 +79,7 @@
   <!-- Weibo-->
   
   <li class="navigation__item">
-    <a href="https://weibo.com/Joeyqiushi" title="我的微博" target="_blank">
+    <a href="https://weibo.com/Joeyqiushi" title="Weibo" target="_blank">
       <i class='social fa fa-weibo'></i>
       <span class="label">Weibo</span>
     </a>
@@ -89,7 +89,7 @@
   <!-- Github -->
   
   <li class="navigation__item">
-    <a href="https://github.com/Joeyqiushi" title="查看我的GitHub主页" target="_blank">
+    <a href="https://github.com/Joeyqiushi" title="GitHub" target="_blank">
       <i class='social fa fa-github'></i>
       <span class="label">Github</span>
     </a>
@@ -135,7 +135,7 @@
   <a class="tag-link" href="/tags/Tech/">Tech</a>
  </span>
       <span class="page-pv">
-       阅读 <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
+       Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
       </span> 
    
     </div>
@@ -169,7 +169,7 @@ dispatch_after(dispatch_time_t when, dispatch_queue_t queue, dispatch_block_t bl
 <pre><code>- (void)dealloc {
    [self cancelTimer];
 }
-</code></pre><p>gcdTimer<br>不幸的是，dealloc方法将永远不会被调用。因为timer的引用，对象X的引用计数永远不会降到0，dealloc方法也就不会被调用。这时如果不调用cancel，对象X将永远无法释放，造成内存泄露。想想一个对象若不调用某一个方法就会造成内存泄露，这该是多大一个坑。</p>
+</code></pre><p>不幸的是，dealloc方法将永远不会被调用。因为timer的引用，对象X的引用计数永远不会降到0，dealloc方法也就不会被调用。这时如果不调用cancel，对象X将永远无法释放，造成内存泄露。想想一个对象若不调用某一个方法就会造成内存泄露，这该是多大一个坑。</p>
 <blockquote>
 <p>This method is the only way to remove a timer from an NSRunLoop object. The NSRunLoop object removes its strong reference to the timer, either just before the invalidate method returns or at some later point.</p>
 <p>If it was configured with target and user info objects, the receiver removes its strong references to those objects as well.</p>
@@ -199,55 +199,57 @@ dispatch_source_cancel(timer);
 <p>到这里问题基本得到了解决，但是我们还可以做的更好:)</p>
 <ol>
 <li>GCD的timer使用的API比较冗余，每次使用都会copy代码。</li>
-<li><p>没有repeats的选项，若只想执行一次还得自己写标记位控制。这些问题我们都可以封装成一个统一的API：</p>
-<ul>
-<li><p>(void)scheduledDispatchTimerWithName:(NSString *)timerName</p>
-<pre><code> timeInterval:(double)interval
-        queue:(dispatch_queue_t)queue
-      repeats:(BOOL)repeats
-fireInstantly:(BOOL)fireInstantly
-       action:(dispatch_block_t)dispatchBlock {
-</code></pre><p> if (!timerName || timerName.length == 0 || !dispatchBlock) return;</p>
-<p> if (nil == queue)</p>
-<pre><code>queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-</code></pre><p> dispatch_barrier_async(self.queue, ^{</p>
-<pre><code>dispatch_source_t timer = [self.timerContainer objectForKey:timerName];
-if (!timer) {
-    timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
-    [self.timerContainer setObject:timer forKey:timerName];
-    dispatch_resume(timer);
-}
-
-if (repeats &amp;&amp; fireInstantly) {
-    dispatch_async(queue, dispatchBlock);
-}
-
-dispatch_source_set_timer(timer, dispatch_time(DISPATCH_TIME_NOW, interval * NSEC_PER_SEC), interval * NSEC_PER_SEC, 0.01 * NSEC_PER_SEC);
-dispatch_source_set_event_handler(timer, ^{
-    if (!repeats) {
-        [self.timerContainer removeObjectForKey:timerName];
-        dispatch_source_cancel(timer);
-    }
-
-    dispatchBlock();
-});
-</code></pre><p> });<br>}</p>
-</li>
-<li><p>(void)cancelTimerWithName:(NSString *)timerName {<br> dispatch_barrier_async(self.queue, ^{</p>
-<pre><code>dispatch_source_t timer = [self.timerContainer objectForKey:timerName];
-
-if (!timer) {
-    return;
-}
-
-[self.timerContainer removeObjectForKey:timerName];
-dispatch_source_cancel(timer);
-</code></pre><p> });<br>}</p>
-</li>
-</ul>
-</li>
+<li>没有repeats的选项，若只想执行一次还得自己写标记位控制。</li>
 </ol>
-<p>这样，外部只需调用这个两个接口，用起来和NSTimer一样方便！</p>
+<p>这些问题我们都可以封装成一个统一的API。</p>
+<pre><code>- (void)scheduledDispatchTimerWithName:(NSString *)timerName
+                         timeInterval:(double)interval
+                                queue:(dispatch_queue_t)queue
+                              repeats:(BOOL)repeats
+                        fireInstantly:(BOOL)fireInstantly
+                               action:(dispatch_block_t)dispatchBlock {
+   if (!timerName || timerName.length == 0 || !dispatchBlock) return;
+
+   if (nil == queue)
+       queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+
+   dispatch_barrier_async(self.queue, ^{
+       dispatch_source_t timer = [self.timerContainer objectForKey:timerName];
+       if (!timer) {
+           timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+           [self.timerContainer setObject:timer forKey:timerName];
+           dispatch_resume(timer);
+       }
+
+       if (repeats &amp;&amp; fireInstantly) {
+           dispatch_async(queue, dispatchBlock);
+       }
+
+       dispatch_source_set_timer(timer, dispatch_time(DISPATCH_TIME_NOW, interval * NSEC_PER_SEC), interval * NSEC_PER_SEC, 0.01 * NSEC_PER_SEC);
+       dispatch_source_set_event_handler(timer, ^{
+           if (!repeats) {
+               [self.timerContainer removeObjectForKey:timerName];
+               dispatch_source_cancel(timer);
+           }
+
+           dispatchBlock();
+       });
+   });
+}
+
+- (void)cancelTimerWithName:(NSString *)timerName {
+   dispatch_barrier_async(self.queue, ^{
+       dispatch_source_t timer = [self.timerContainer objectForKey:timerName];
+
+       if (!timer) {
+           return;
+       }
+
+       [self.timerContainer removeObjectForKey:timerName];
+       dispatch_source_cancel(timer);
+   });
+}
+</code></pre><p>这样，外部只需调用这个两个接口，用起来和NSTimer一样方便！</p>
 <pre><code>[[JX_GCDTimerManager sharedInstance]  cancelTimerWithName:@&quot;myTime_hash&quot;];
 __weak typeof(self) weakSelf = self;
 [[JX_GCDTimerManager sharedInstance] scheduledDispatchTimerWithName:@&quot;myTime_hash&quot;
@@ -263,7 +265,6 @@ __weak typeof(self) weakSelf = self;
 <hr>
 <p>综上，选择使用GCD的技术有助于我们提高代码的健壮性与稳定性。</p>
 <p>注：文中若有错误，恭请斧正哈！：)</p>
-<hr>
 <p><a href="https://github.com/Joeyqiushi/JX_GCDTimer" target="_blank" rel="noopener">Git源码</a></p>
 
   </section>
@@ -275,7 +276,7 @@ __weak typeof(self) weakSelf = self;
     
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">最近的文章</span>
+                <span class="read-more-item-dim">Newer Post</span>
                 <h2 class="post-list__post-title post-title"><a href="/2015/08/01/NSDateFormatter最佳实践/" title="NSDateFormatter最佳实践">NSDateFormatter最佳实践</a></h2>
                 <p class="excerpt">
                 
