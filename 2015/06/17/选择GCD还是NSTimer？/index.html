@@ -67,7 +67,7 @@
           <div>
           <nav class="cover-navigation cover-navigation--primary">
             <ul class="navigation">
-              <li class="navigation__item"><a href="/#blog" title="Visit the blog" class="blog-button">Blog</a></li>
+              <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">Blog</a></li>
             
             </ul>
           </nav>
@@ -79,7 +79,7 @@
   <!-- Weibo-->
   
   <li class="navigation__item">
-    <a href="https://weibo.com/Joeyqiushi" title="Weibo" target="_blank">
+    <a href="https://weibo.com/Joeyqiushi" title="我的微博" target="_blank">
       <i class='social fa fa-weibo'></i>
       <span class="label">Weibo</span>
     </a>
@@ -89,7 +89,7 @@
   <!-- Github -->
   
   <li class="navigation__item">
-    <a href="https://github.com/Joeyqiushi" title="GitHub" target="_blank">
+    <a href="https://github.com/Joeyqiushi" title="查看我的GitHub主页" target="_blank">
       <i class='social fa fa-github'></i>
       <span class="label">Github</span>
     </a>
@@ -135,7 +135,7 @@
   <a class="tag-link" href="/tags/Tech/">Tech</a>
  </span>
       <span class="page-pv">
-       Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
+       阅读 <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
       </span> 
    
     </div>
@@ -145,34 +145,31 @@
   <section class="post">
     <p>我们常常会延迟某件任务的执行，或者让某件任务周期性的执行。然后也会在某些时候需要取消掉之前延迟执行的任务。</p>
 <p>延迟操作的方案一般有三种：</p>
-<h4 id="1-NSObject的方法："><a href="#1-NSObject的方法：" class="headerlink" title="1. NSObject的方法："></a>1. NSObject的方法：</h4><ul>
-<li>(void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay;</li>
-</ul>
-<h4 id="2-使用NSTimer的方法："><a href="#2-使用NSTimer的方法：" class="headerlink" title="2. 使用NSTimer的方法："></a>2. 使用NSTimer的方法：</h4><ul>
-<li>(NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;</li>
-<li>(NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;</li>
-</ul>
-<h4 id="3-使用GCD的方法："><a href="#3-使用GCD的方法：" class="headerlink" title="3. 使用GCD的方法："></a>3. 使用GCD的方法：</h4><p>   void<br>   dispatch_after(dispatch_time_t when, dispatch_queue_t queue, dispatch_block_t block);</p>
-<p>一般情况下，我们选择使用GCD的dispatch_after。</p>
+<h4 id="1-NSObject的方法："><a href="#1-NSObject的方法：" class="headerlink" title="1. NSObject的方法："></a>1. NSObject的方法：</h4><pre><code>- (void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay;
+</code></pre><h4 id="2-使用NSTimer的方法："><a href="#2-使用NSTimer的方法：" class="headerlink" title="2. 使用NSTimer的方法："></a>2. 使用NSTimer的方法：</h4><pre><code>+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;
++ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;
+</code></pre><h4 id="3-使用GCD的方法："><a href="#3-使用GCD的方法：" class="headerlink" title="3. 使用GCD的方法："></a>3. 使用GCD的方法：</h4><pre><code>void
+dispatch_after(dispatch_time_t when, dispatch_queue_t queue, dispatch_block_t block);
+</code></pre><p>一般情况下，我们选择使用GCD的dispatch_after。</p>
 <p>因为如果不用GCD，编码需要注意以下三个细节：</p>
 <h4 id="1-必须保证有一个活跃的runloop。"><a href="#1-必须保证有一个活跃的runloop。" class="headerlink" title="1. 必须保证有一个活跃的runloop。"></a>1. 必须保证有一个活跃的runloop。</h4><p>performSelector和scheduledTimerWithTimeInterval方法都是基于runloop的。我们知道，当一个应用启动时，系统会开启一个主线程，并且把主线程的runloop激活，也就是run起来，并且主线程的runloop是不会停止的。所以，当这两个方法在主线程可以被正常调用。但情况往往不是这样的。实际编码中，我们更多的逻辑是放在子线程中执行的。而子线程的runloop是默认关闭的。这时如果不手动激活runloop，performSelector和scheduledTimerWithTimeInterval的调用将是无效的。</p>
 <h4 id="2-NSTimer的创建与撤销必须在同一个线程操作、performSelector的创建与撤销必须在同一个线程操作。-因为NSTimer不是线程安全的"><a href="#2-NSTimer的创建与撤销必须在同一个线程操作、performSelector的创建与撤销必须在同一个线程操作。-因为NSTimer不是线程安全的" class="headerlink" title="2. NSTimer的创建与撤销必须在同一个线程操作、performSelector的创建与撤销必须在同一个线程操作。(因为NSTimer不是线程安全的)"></a>2. NSTimer的创建与撤销必须在同一个线程操作、performSelector的创建与撤销必须在同一个线程操作。(因为NSTimer不是线程安全的)</h4><h4 id="3-内存管理有潜在泄露的风险"><a href="#3-内存管理有潜在泄露的风险" class="headerlink" title="3.内存管理有潜在泄露的风险"></a>3.内存管理有潜在泄露的风险</h4><p>scheduledTimerWithTimeInterval方法将target设为A对象时，A对象会被这个timer所持有，也就是会被retain一次，timer会被当前的runloop所持有。performSelector:withObject:afterDelay:方法实际上是在当前线程的runloop里帮你创建的一个timer去执行任务，所以和scheduledTimerWithTimeInterval方法一样会retain其调用对象。但是，我们往往不希望因为这些延迟操作而影响对象的生命周期，更甚至是，导致对象无法释放。举个例子：</p>
-<ul>
-<li><p>(void)fireTimer {<br>  _timer = [NSTimer scheduledTimerWithTimeInterval:2.0</p>
-<pre><code>  target:self
-selector:@selector(doSomething)
-userInfo:nil
- repeats:YES];
-</code></pre><p>}</p>
-</li>
-<li><p>(void)cancelTimer {<br>  [_timer invalidate];<br>}</p>
-</li>
-</ul>
-<p>你创建的对象X中有一个实例变量_timer，方法fireTimer触发一个timer，方法cancel取消这个timer。在对象X需要销毁的时候，需要将它的timer取消掉。</p>
-<ul>
-<li>(void)dealloc {<br>  [self cancelTimer];<br>}</li>
-</ul>
-<p>gcdTimer<br>不幸的是，dealloc方法将永远不会被调用。因为timer的引用，对象X的引用计数永远不会降到0，dealloc方法也就不会被调用。这时如果不调用cancel，对象X将永远无法释放，造成内存泄露。想想一个对象若不调用某一个方法就会造成内存泄露，这该是多大一个坑。</p>
+<pre><code>- (void)fireTimer {
+   _timer = [NSTimer scheduledTimerWithTimeInterval:2.0
+                                             target:self
+                                           selector:@selector(doSomething)
+                                           userInfo:nil
+                                            repeats:YES];
+}
+
+- (void)cancelTimer {
+   [_timer invalidate];
+}
+</code></pre><p>你创建的对象X中有一个实例变量_timer，方法fireTimer触发一个timer，方法cancel取消这个timer。在对象X需要销毁的时候，需要将它的timer取消掉。</p>
+<pre><code>- (void)dealloc {
+   [self cancelTimer];
+}
+</code></pre><p>gcdTimer<br>不幸的是，dealloc方法将永远不会被调用。因为timer的引用，对象X的引用计数永远不会降到0，dealloc方法也就不会被调用。这时如果不调用cancel，对象X将永远无法释放，造成内存泄露。想想一个对象若不调用某一个方法就会造成内存泄露，这该是多大一个坑。</p>
 <blockquote>
 <p>This method is the only way to remove a timer from an NSRunLoop object. The NSRunLoop object removes its strong reference to the timer, either just before the invalidate method returns or at some later point.</p>
 <p>If it was configured with target and user info objects, the receiver removes its strong references to those objects as well.</p>
@@ -182,11 +179,27 @@ userInfo:nil
 <p>若使用dispatch_after，系统会帮我们处理线程级的逻辑，这样也我们更易于享受系统对线程所做的优化。除此之外，我们不用关心runloop的问题。并且调用的对象也不会被强行持有，这样上述的内存问题也不复存在。当然，需要注意block会持有其传入的对象，但这可以通过weakself解决。所以在这种延迟操作方案中，使用dispatch_after更佳。</p>
 <p>但是呢，dispatch_after有个致命的弱点：dispatch_after一旦执行后，就不能撤销了。而performSelector可以使用cancelPreviousPerformRequestsWithTarget方法撤销，NSTimer也可以调用invalidate进行撤销。（注意：撤销任务与创建timer任务必须在同一个线程，即同一个runloop）所以我们还是得用NSTimer或者performSelector吗？</p>
 <p>NO，其实GCD也有timer的功能。用GCD来实现一个timer：</p>
-<p>   // 拿到一个队列<br>   dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);<br>   // 创建一个timer放到队列里面<br>   dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);<br>   // 设置timer的首次执行时间、执行时间间隔、间隔精确度<br>   dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 2.0 <em> NSEC_PER_SEC, 0.1 </em> NSEC_PER_SEC);<br>   // 设置timer执行的事件<br>   __weak typeof(self) weakSelf = self;<br>   dispatch_source_set_event_handler(timer, ^{<br>       [weakSelf doSomething];<br>   });<br>   // 激活timer<br>   dispatch_resume(timer);</p>
-<p>   // 取消timer<br>   dispatch_source_cancel(timer);</p>
-<p>这样我们就规避了NSTimer的三个缺陷。</p>
+<pre><code>// 拿到一个队列
+dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+// 创建一个timer放到队列里面
+dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+// 设置timer的首次执行时间、执行时间间隔、间隔精确度
+dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 2.0 * NSEC_PER_SEC, 0.1 * NSEC_PER_SEC);
+// 设置timer执行的事件
+__weak typeof(self) weakSelf = self;
+dispatch_source_set_event_handler(timer, ^{
+   [weakSelf doSomething];
+});
+// 激活timer
+dispatch_resume(timer);
+
+// 取消timer
+dispatch_source_cancel(timer);
+</code></pre><p>这样我们就规避了NSTimer的三个缺陷。</p>
 <p>到这里问题基本得到了解决，但是我们还可以做的更好:)</p>
-<p>1.GCD的timer使用的API比较冗余，每次使用都会copy代码。2.没有repeats的选项，若只想执行一次还得自己写标记位控制。这些问题我们都可以封装成一个统一的API：</p>
+<ol>
+<li>GCD的timer使用的API比较冗余，每次使用都会copy代码。</li>
+<li><p>没有repeats的选项，若只想执行一次还得自己写标记位控制。这些问题我们都可以封装成一个统一的API：</p>
 <ul>
 <li><p>(void)scheduledDispatchTimerWithName:(NSString *)timerName</p>
 <pre><code> timeInterval:(double)interval
@@ -194,10 +207,10 @@ userInfo:nil
       repeats:(BOOL)repeats
 fireInstantly:(BOOL)fireInstantly
        action:(dispatch_block_t)dispatchBlock {
-</code></pre><p>  if (!timerName || timerName.length == 0 || !dispatchBlock) return;</p>
-<p>  if (nil == queue)</p>
+</code></pre><p> if (!timerName || timerName.length == 0 || !dispatchBlock) return;</p>
+<p> if (nil == queue)</p>
 <pre><code>queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-</code></pre><p>  dispatch_barrier_async(self.queue, ^{</p>
+</code></pre><p> dispatch_barrier_async(self.queue, ^{</p>
 <pre><code>dispatch_source_t timer = [self.timerContainer objectForKey:timerName];
 if (!timer) {
     timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
@@ -218,9 +231,9 @@ dispatch_source_set_event_handler(timer, ^{
 
     dispatchBlock();
 });
-</code></pre><p>  });<br>}</p>
+</code></pre><p> });<br>}</p>
 </li>
-<li><p>(void)cancelTimerWithName:(NSString *)timerName {<br>  dispatch_barrier_async(self.queue, ^{</p>
+<li><p>(void)cancelTimerWithName:(NSString *)timerName {<br> dispatch_barrier_async(self.queue, ^{</p>
 <pre><code>dispatch_source_t timer = [self.timerContainer objectForKey:timerName];
 
 if (!timer) {
@@ -229,14 +242,25 @@ if (!timer) {
 
 [self.timerContainer removeObjectForKey:timerName];
 dispatch_source_cancel(timer);
-</code></pre><p>  });<br>}</p>
+</code></pre><p> });<br>}</p>
 </li>
 </ul>
+</li>
+</ol>
 <p>这样，外部只需调用这个两个接口，用起来和NSTimer一样方便！</p>
-<p>   [[JX_GCDTimerManager sharedInstance]  cancelTimerWithName:@”myTime_hash”];<br>   __weak typeof(self) weakSelf = self;<br>   [[JX_GCDTimerManager sharedInstance] scheduledDispatchTimerWithName:@”myTime_hash”<br>                                                          timeInterval:2.0<br>                                                                 queue:dispatch_get_main_queue()<br>                                                               repeats:NO<br>                                                         fireInstantly:NO<br>                                                                action:^{<br>                                                                    [weakSelf doSomething];<br>                                                                }];</p>
-<p>上面的代码就创建了一个名叫myTimer的timer，这个timer将在2 seconds后执行一个block，随后timer自动停止并被释放。当然，如果repeats参数传入的是YES，那么这么timer会一个周期接一个周期的执行，直到你cancel掉这个timer。</p>
+<pre><code>[[JX_GCDTimerManager sharedInstance]  cancelTimerWithName:@&quot;myTime_hash&quot;];
+__weak typeof(self) weakSelf = self;
+[[JX_GCDTimerManager sharedInstance] scheduledDispatchTimerWithName:@&quot;myTime_hash&quot;
+                                                      timeInterval:2.0
+                                                             queue:dispatch_get_main_queue()
+                                                           repeats:NO
+                                                     fireInstantly:NO
+                                                            action:^{
+                                                                [weakSelf doSomething];
+                                                            }];
+</code></pre><p>上面的代码就创建了一个名叫myTimer的timer，这个timer将在2 seconds后执行一个block，随后timer自动停止并被释放。当然，如果repeats参数传入的是YES，那么这么timer会一个周期接一个周期的执行，直到你cancel掉这个timer。</p>
 <p>当然，你可以在self对象的dealloc方法里面做cancel，这样保证了timer恰好运行于整个对象的生命周期中。这是NSTimer和performSelector所做不到的事情。你也可以通过queue参数控制这个timer所添加到的线程，也就是action最终执行的线程。传入nil则会默认放到子线程中执行。UI相关的操作需要传入dispatch_get_main_queue()以放到主线程中执行。</p>
-<p>详细的实现，见git源码。</p>
+<hr>
 <p>综上，选择使用GCD的技术有助于我们提高代码的健壮性与稳定性。</p>
 <p>注：文中若有错误，恭请斧正哈！：)</p>
 <p><a href="https://github.com/Joeyqiushi/JX_GCDTimer" target="_blank" rel="noopener">Git源码</a></p>
@@ -250,7 +274,7 @@ dispatch_source_cancel(timer);
     
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">Newer Post</span>
+                <span class="read-more-item-dim">最近的文章</span>
                 <h2 class="post-list__post-title post-title"><a href="/2015/08/01/NSDateFormatter最佳实践/" title="NSDateFormatter最佳实践">NSDateFormatter最佳实践</a></h2>
                 <p class="excerpt">
                 

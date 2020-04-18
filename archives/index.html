@@ -67,7 +67,7 @@
           <div>
           <nav class="cover-navigation cover-navigation--primary">
             <ul class="navigation">
-              <li class="navigation__item"><a href="/#blog" title="Visit the blog" class="blog-button">Blog</a></li>
+              <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">Blog</a></li>
             
             </ul>
           </nav>
@@ -79,7 +79,7 @@
   <!-- Weibo-->
   
   <li class="navigation__item">
-    <a href="https://weibo.com/Joeyqiushi" title="Weibo" target="_blank">
+    <a href="https://weibo.com/Joeyqiushi" title="我的微博" target="_blank">
       <i class='social fa fa-weibo'></i>
       <span class="label">Weibo</span>
     </a>
@@ -89,7 +89,7 @@
   <!-- Github -->
   
   <li class="navigation__item">
-    <a href="https://github.com/Joeyqiushi" title="GitHub" target="_blank">
+    <a href="https://github.com/Joeyqiushi" title="查看我的GitHub主页" target="_blank">
       <i class='social fa fa-github'></i>
       <span class="label">Github</span>
     </a>
@@ -206,9 +206,7 @@ dispatch_sync(dispatch_queue_t queue, dispatch_
     
       我们常常会延迟某件任务的执行，或者让某件任务周期性的执行。然后也会在某些时候需要取消掉之前延迟执行的任务。
 延迟操作的方案一般有三种：
-1. NSObject的方法：
-(void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay;
-
+1. NSObject的方法：- (void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay;
 2. 使用NSTi
     &hellip;
       </p>
