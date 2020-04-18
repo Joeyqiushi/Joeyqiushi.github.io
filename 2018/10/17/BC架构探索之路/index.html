@@ -67,7 +67,7 @@
           <div>
           <nav class="cover-navigation cover-navigation--primary">
             <ul class="navigation">
-              <li class="navigation__item"><a href="/#blog" title="Visit the blog" class="blog-button">Blog</a></li>
+              <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">Blog</a></li>
             
             </ul>
           </nav>
@@ -79,7 +79,7 @@
   <!-- Weibo-->
   
   <li class="navigation__item">
-    <a href="https://weibo.com/Joeyqiushi" title="Weibo" target="_blank">
+    <a href="https://weibo.com/Joeyqiushi" title="我的微博" target="_blank">
       <i class='social fa fa-weibo'></i>
       <span class="label">Weibo</span>
     </a>
@@ -89,7 +89,7 @@
   <!-- Github -->
   
   <li class="navigation__item">
-    <a href="https://github.com/Joeyqiushi" title="GitHub" target="_blank">
+    <a href="https://github.com/Joeyqiushi" title="查看我的GitHub主页" target="_blank">
       <i class='social fa fa-github'></i>
       <span class="label">Github</span>
     </a>
@@ -135,7 +135,7 @@
   <a class="tag-link" href="/tags/Tech/">Tech</a>
  </span>
       <span class="page-pv">
-       Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
+       阅读 <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
       </span> 
    
     </div>
@@ -146,13 +146,13 @@
     <p>做iOS也有些年头了，最近把项目核心模块的架构重新设计了一番，这里做一些记录。<br>首先，我们要对基础的设计模式有一定的认知。这些基础的设计模式，便是<strong>MVC</strong>、<strong>MVVM</strong>、<strong>VIPER</strong>。</p>
 <h2 id="MVC、MVVM"><a href="#MVC、MVVM" class="headerlink" title="MVC、MVVM"></a>MVC、MVVM</h2><hr>
 <p>关于 MVC ，斯坦福的 Paul 老头有一张经典的图示，相信大部分iOSer都看过：</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/595974-7cde8761a6e3f1a3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="mvc.png"></p>
+<p><img src="https://secretmood.coding.net/p/sources/d/sources/git/raw/master/MVC.jpg" alt="mvc.png"></p>
 <p>当有多个模块时，我们需要有多个 MVC 互相配合：</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/595974-057800746e882e80.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MVCs working together.png"></p>
+<p><img src="https://secretmood.coding.net/p/sources/d/sources/git/raw/master/MultipleMVC.png" alt="MVCs working together.png"></p>
 <p>可以看到，多个模块之间的交互都是通过 Controller 层。以上就是 MVC 的概览，那么 MVVM 是什么样的呢？</p>
 <p>MVVM 是 Model-View-ViewModel 的缩写。其实在 MVC 的基础上再稍进一步，把 Controller 与 View 之间的数据传递过程独立出来，封装成一个模块，叫做 ViewModel ，这就成了 MVVM 了。在 MVVM 的基础上，通常还会使用双向绑定技术，使得 View 和 ViewModel 之间可以自动同步。</p>
 <h2 id="VIPER"><a href="#VIPER" class="headerlink" title="VIPER"></a>VIPER</h2><hr>
-<p><img src="https://upload-images.jianshu.io/upload_images/595974-ddc8f20be707753d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="viper.png"></p>
+<p><img src="https://secretmood.coding.net/p/sources/d/sources/git/raw/master/VIPER.png" alt="viper.png"></p>
 <p>VIPER ，全称 View-Interactor-Presenter-Entity-Router 。这是另一种细分 MVC 而得到的架构。从上图可以看到， VIPER 实际上是将 MVC 中的 Controller 细化为了三个模块，即 Presenter、Interactor、Router 。 Entity 负责数据持久化， Interactor 负责业务相关的逻辑计算等， Presenter 则负责将业务数据传递给 View ，也负责处理 View 的事件。大部分 View 的事件是交由逻辑侧 interactor 处理，在 interactor 处理完后会触发必要的 UI 刷新。跳转相关的 View 事件则交由 Router 处理。</p>
 <p>可以看到， VIPER 和 MVVM 并不矛盾，我们可以在 MVVM 的基础上继续细化得到 VIPER ， ViewModel 相关的逻辑放在 Presenter 中即可。</p>
 <p>同样，当有多个模块时，我们需要有多个 VIPER 互相配合。</p>
@@ -211,7 +211,7 @@
 <p>在采用 BC 的架构之后，所有的模块都需要创建 BC ，再也没有随意散落在 VC 中的代码。</p>
 <p>至此，我们实现了将 VC 中的业务模块逐一打散，各自为营，也支持业务模块之间的灵活通信。其代码量无限增长的问题、代码糅杂在一起鱼龙混杂的问题等，都得到了解决。</p>
 <h2 id="BC-与传统架构"><a href="#BC-与传统架构" class="headerlink" title="BC 与传统架构"></a>BC 与传统架构</h2><hr>
-<p><img src="https://upload-images.jianshu.io/upload_images/595974-b531c41fcf768dac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="BC_Overview.png"></p>
+<p><img src="https://secretmood.coding.net/p/sources/d/sources/git/raw/master/BC.png" alt="BC_Overview.png"></p>
 <p> BC 设计模式的通信结构如上图所示（ Owner 即文中的 ViewController ）。 Owner 将主流程事件发至消息中心，由消息中心路由至各个 Module 。而各个 Module 之间也通过消息中心转发至其他 Module 。</p>
 <p>可以看到 BC 和传统的 MVC ， MVVM , VIPER 的关系不是互斥的，是并存的。从 MVC 到 MVVM 到 VIPER 是对架构的不断细化。而 BC 则是提供了一种划分模块的机制。即一个 Module 可以是 Model ，可以是 View ，也可以是包含了 MVC 的一个完整的模块。在使用 MVC ， MVVM ， VIPER 等设计模式时，我们可以同时使用 BC 来帮助我们组织各个模块。通过 BC ，我们将根据不同架构设计的不同模块有机的结合了起来。</p>
 <h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a><a href="https://github.com/Joeyqiushi/BC-DesignPattern-OC" target="_blank" rel="noopener">Demo</a></h2>
@@ -224,7 +224,7 @@
     
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">Newer Post</span>
+                <span class="read-more-item-dim">最近的文章</span>
                 <h2 class="post-list__post-title post-title"><a href="/2018/11/06/UIGesture和UIControl的前世今缘/" title="UIGesture和UIControl的前世今缘">UIGesture和UIControl的前世今缘</a></h2>
                 <p class="excerpt">
                 
@@ -241,7 +241,7 @@
         
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">Older Post</span>
+                <span class="read-more-item-dim">更早的文章</span>
                 <h2 class="post-list__post-title post-title"><a href="/2017/08/29/如何安全使用dispatch_sync/" title="如何安全使用dispatch_sync">如何安全使用dispatch_sync</a></h2>
                 <p class="excerpt">
                 

@@ -67,7 +67,7 @@
           <div>
           <nav class="cover-navigation cover-navigation--primary">
             <ul class="navigation">
-              <li class="navigation__item"><a href="/#blog" title="Visit the blog" class="blog-button">Blog</a></li>
+              <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">Blog</a></li>
             
             </ul>
           </nav>
@@ -79,7 +79,7 @@
   <!-- Weibo-->
   
   <li class="navigation__item">
-    <a href="https://weibo.com/Joeyqiushi" title="Weibo" target="_blank">
+    <a href="https://weibo.com/Joeyqiushi" title="我的微博" target="_blank">
       <i class='social fa fa-weibo'></i>
       <span class="label">Weibo</span>
     </a>
@@ -89,7 +89,7 @@
   <!-- Github -->
   
   <li class="navigation__item">
-    <a href="https://github.com/Joeyqiushi" title="GitHub" target="_blank">
+    <a href="https://github.com/Joeyqiushi" title="查看我的GitHub主页" target="_blank">
       <i class='social fa fa-github'></i>
       <span class="label">Github</span>
     </a>
@@ -135,7 +135,7 @@
   <a class="tag-link" href="/tags/Tech/">Tech</a>
  </span>
       <span class="page-pv">
-       Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
+       阅读 <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
       </span> 
    
     </div>
@@ -156,7 +156,7 @@
 </ol>
 <p>接下来我们深入每个步骤去看看苹果是如何设计的。</p>
 <h2 id="Response-Chain"><a href="#Response-Chain" class="headerlink" title="Response Chain"></a>Response Chain</h2><p>手势识别的第一步就是确定响应链。那么，什么是响应链呢？响应链是指，从你点击到的 view ，一直找其 superview ，直到根视图（通常是 UIWindow ），这个视图链我们称为响应链。举个例子:</p>
-<p><img src="https://coding.net/u/joeyxu/p/Resources/git/raw/master/ResponseChain.png" alt="avatar"></p>
+<p><img src="https://secretmood.coding.net/p/sources/d/sources/git/raw/master/UIGesture.png" alt="avatar"></p>
 <p>红色的这个视图链，就是我们希望找到的响应链。之所以我们称其为响应链，是因为触摸事件将最终在这个视图链中得到处理。</p>
 <p>Hit Test 是 Apple 设计的用于寻找响应链的工具。其实现如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// UIView.m</span><br><span class="line">- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event &#123;</span><br><span class="line">    if (!self.isUserInteractionEnabled || self.isHidden || self.alpha &lt; 0.01) &#123;</span><br><span class="line">        return nil;</span><br><span class="line">    &#125;</span><br><span class="line">    if ([self pointInside:point withEvent:event]) &#123;</span><br><span class="line">        for (UIView *subview in [self.subviews reverseObjectEnumerator]) &#123;</span><br><span class="line">            CGPoint convertedPoint = [self convertPoint:point toView:subview];</span><br><span class="line">            UIView *hitView = [subview hitTest:convertedPoint withEvent:event];</span><br><span class="line">            if (hitView) &#123;</span><br><span class="line">                return hitView;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return self;</span><br><span class="line">    &#125;</span><br><span class="line">    return nil;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -216,7 +216,7 @@
         
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">Older Post</span>
+                <span class="read-more-item-dim">更早的文章</span>
                 <h2 class="post-list__post-title post-title"><a href="/2018/10/17/BC架构探索之路/" title="BC架构探索之路">BC架构探索之路</a></h2>
                 <p class="excerpt">
                 
