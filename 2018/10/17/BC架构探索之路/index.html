@@ -67,7 +67,7 @@
           <div>
           <nav class="cover-navigation cover-navigation--primary">
             <ul class="navigation">
-              <li class="navigation__item"><a href="/#blog" title="Blogを読む" class="blog-button">Blog</a></li>
+              <li class="navigation__item"><a href="/#blog" title="Visit the blog" class="blog-button">Blog</a></li>
             
             </ul>
           </nav>
@@ -135,7 +135,7 @@
   <a class="tag-link" href="/tags/Tech/">Tech</a>
  </span>
       <span class="page-pv">
-       No. <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
+       Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
       </span> 
    
     </div>
@@ -199,7 +199,7 @@
 <p>那我们就用 delegate 吧？—— NO！ 第一，使用 delegate 我们需要不断的去维护那些对象之间的 delegate 关系（即在 VC 中编写 delegate 的依赖关系，<code>A.delegate = B</code>），这也会引入 <strong>Massive View Controller</strong> 中提到的时序问题。第二，若是模块 A 的代理事件模块 B 和模块 C 都需要监听，我们还需要将 delegate 做成数组。咦，真够恶心。</p>
 <p>所以，我们能否找到一种更好的方式来解决通信问题呢？</p>
 <p>这里我提供的解决方案是使用 OC 的消息转发特性（对消息转发不太了解的同学，可以学习一下《Effective Objective-C 2.0》中消息转发的章节）。首先我们创建一个消息中心 <code>CommunicationCenter</code> ，一个消息协议 <code>BusinessControllerConversation</code> 。让消息中心遵循消息协议，但其内部不实现任何方法，其只做转发，将消息转发给每一个实现了该消息的业务模块（ BC ）。接收消息的 BC 也遵循 <code>BusinessControllerConversation</code> 协议。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">// Define.h</span><br><span class="line">@protocol BusinessControllerConversation &lt;NSObject&gt;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">// Define.h</span><br><span class="line">@protocol BusinessController &lt;ViewControllerEvents, BusinessControllerConversation&gt;</span><br><span class="line">@required</span><br><span class="line">// 建立一个vc的弱引用，用于访问vc</span><br><span class="line">@property (nonatomic, weak) ViewController *viewController;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">// CommunicationCenter.m</span><br><span class="line">@interface CommunicationCenter : NSObject &lt;BusinessControllerConversation&gt;</span><br><span class="line">// 建立一个vc的弱引用，用于访问vc</span><br><span class="line">@property (nonatomic, weak) ViewController *viewController;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">// CommunicationCenter.m</span><br><span class="line">- (void)forwardInvocation:(NSInvocation *)anInvocation &#123;</span><br><span class="line">    SEL selector = anInvocation.selector;</span><br><span class="line">    [self.viewController.businessControllers enumerateObjectsUsingBlock:^(id&lt;BusinessController&gt; _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) &#123;</span><br><span class="line">        if ([obj respondsToSelector:selector]) &#123;</span><br><span class="line">            [anInvocation invokeWithTarget:obj];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">// Define.h</span><br><span class="line">@protocol BusinessControllerConversation &lt;NSObject&gt;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">// Define.h</span><br><span class="line">@protocol BusinessController &lt;ViewControllerEvents, BusinessControllerConversation&gt;</span><br><span class="line">@required</span><br><span class="line">// 建立一个vc的弱引用，用于访问vc</span><br><span class="line">@property (nonatomic, weak) ViewController *viewController;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">// CommunicationCenter.h</span><br><span class="line">@interface CommunicationCenter : NSObject &lt;BusinessControllerConversation&gt;</span><br><span class="line">// 建立一个vc的弱引用，用于访问vc</span><br><span class="line">@property (nonatomic, weak) ViewController *viewController;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">// CommunicationCenter.m</span><br><span class="line">- (void)forwardInvocation:(NSInvocation *)anInvocation &#123;</span><br><span class="line">    SEL selector = anInvocation.selector;</span><br><span class="line">    [self.viewController.businessControllers enumerateObjectsUsingBlock:^(id&lt;BusinessController&gt; _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) &#123;</span><br><span class="line">        if ([obj respondsToSelector:selector]) &#123;</span><br><span class="line">            [anInvocation invokeWithTarget:obj];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>接着，我们在 VC 中创建并持有一个消息中心。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// ViewController.h</span><br><span class="line">@property (nonatomic, strong) CommunicationCenter *communicationCenter;</span><br><span class="line"></span><br><span class="line">// ViewController.m</span><br><span class="line">_communicationCenter = [CommunicationCenter new];</span><br></pre></td></tr></table></figure>
 <p>这样，当我们的业务模块之间需要通信时，将消息定义在 <code>BusinessControllerConversation</code> 中，然后直接向消息中心发送消息即可。例如当前页面的刷新按钮被点击了，但管理刷新按钮的模块并不管当前页面有哪些模块需要刷新，它只管将该消息抛到消息中心。而需要刷新的业务模块，则实现该消息即可。</p>
@@ -224,7 +224,7 @@
     
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">新しい記事</span>
+                <span class="read-more-item-dim">Newer Post</span>
                 <h2 class="post-list__post-title post-title"><a href="/2018/11/06/UIGesture和UIControl的前世今缘/" title="UIGesture和UIControl的前世今缘">UIGesture和UIControl的前世今缘</a></h2>
                 <p class="excerpt">
                 
@@ -241,7 +241,7 @@
         
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">以前の記事</span>
+                <span class="read-more-item-dim">Older Post</span>
                 <h2 class="post-list__post-title post-title"><a href="/2017/08/29/如何安全使用dispatch_sync/" title="如何安全使用dispatch_sync">如何安全使用dispatch_sync</a></h2>
                 <p class="excerpt">
                 
