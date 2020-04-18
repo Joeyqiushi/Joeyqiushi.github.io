@@ -67,7 +67,7 @@
           <div>
           <nav class="cover-navigation cover-navigation--primary">
             <ul class="navigation">
-              <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">Blog</a></li>
+              <li class="navigation__item"><a href="/#blog" title="Blogを読む" class="blog-button">Blog</a></li>
             
             </ul>
           </nav>
@@ -79,7 +79,7 @@
   <!-- Weibo-->
   
   <li class="navigation__item">
-    <a href="https://weibo.com/Joeyqiushi" title="我的微博" target="_blank">
+    <a href="https://weibo.com/Joeyqiushi" title="Weibo" target="_blank">
       <i class='social fa fa-weibo'></i>
       <span class="label">Weibo</span>
     </a>
@@ -89,7 +89,7 @@
   <!-- Github -->
   
   <li class="navigation__item">
-    <a href="https://github.com/Joeyqiushi" title="查看我的GitHub主页" target="_blank">
+    <a href="https://github.com/Joeyqiushi" title="GitHub" target="_blank">
       <i class='social fa fa-github'></i>
       <span class="label">Github</span>
     </a>
@@ -135,7 +135,7 @@
   <a class="tag-link" href="/tags/Tech/">Tech</a>
  </span>
       <span class="page-pv">
-       阅读 <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
+       No. <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
       </span> 
    
     </div>
@@ -187,7 +187,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[singleTap requireGestureRecognizerToFail:doubleTap];</span><br></pre></td></tr></table></figure>
 <p>和 <em>UIGestureRecognizerDelegate</em> 相比，初始化加载会更显笨拙。因为你必须有两个 gesture 的指针用来作为调用参数，而有时这两个 gesture 可能在代码和视图结构上距离很远，十分不便。并且规则的指定只限于已有的 gesture 对象，没法做一些统一的手势处理，例如上面提到的双击优先于单击响应。</p>
 <h2 id="Gesture-Recognized"><a href="#Gesture-Recognized" class="headerlink" title="Gesture Recognized"></a>Gesture Recognized</h2><p>在确认可响应的手势后，系统会倒叙遍历寻找最终得到响应的手势。在同一个视图中，后添加的手势优先响应。</p>
-<p><img src="https://coding.net/u/joeyxu/p/Resources/git/raw/master/DecideGesture.png" alt="avatar"></p>
+<p><img src="https://secretmood.coding.net/p/sources/d/sources/git/raw/master/UIGesture1.png" alt="avatar"></p>
 <p>如上图所示，假设我们在 ViewA 上添加了手势 gesture0 ， ViewB 上依次添加了手势 gesture1 和 gesture2 ， ViewC 上添加了 gesture3 。在每一轮 touch 事件处理完成后，系统会查询当前被识别的手势。我们点击 ViewC 后，被识别的手势有 gesture0 ， gesture1 ， gesture2 ， gesture3 ，那么最终响应的手势就是 gesture3 。如果确认可响应的手势只有 gesture0 ， gesture1 ， gesture2 ，没有 gesture3 ，那么 gesture2 会得到响应。若没有 gesture2 ，那么 gesture1 得到响应。这样依次往前找到最终响应的手势。另外，在找到最终响应的手势后，若有任意一个 <code>[gestureRecognizer:shouldRecognizeSimultaneouslyWithGestureRecognizer:]</code> 回调中指定另外的手势可同时响应，并且另外的这些手势也属于可响应手势，那么这些手势会同时响应。</p>
 <p>注意：单一响应的原则只适用于某一轮 touch 事件处理。即当前一轮 touch 事件处理完后，在查询到的被识别的手势后，会倒叙确定一个响应手势。但不同轮次的 touch 事件处理互不相关。举个例子：假设我们在 ViewC 上添加一个双击手势，在 ViewB 上添加一个单击手势，然后我们双击 ViewC 。我们会发现，单击和双击都被识别了，这是因为这两个手势是在不同的 touch 事件中得到识别的。另外，第二次的 touch 识别为双击，若响应链中有双击，则走双击识别，如果仅有单击，那就按单击识别。</p>
 <h2 id="UIControl"><a href="#UIControl" class="headerlink" title="UIControl"></a>UIControl</h2><h5 id="delayTouchesBegan"><a href="#delayTouchesBegan" class="headerlink" title="delayTouchesBegan"></a>delayTouchesBegan</h5><p>不知有没有读者遇到过 UIButton 的高亮状态延迟的情况？就是点击下去了，按钮过一会才会高亮。当你在 UIScrollView 上添加一个 UIButton 时，你就会发现这个现象。当然这个高亮延迟的现象还会出现在许多其他的场景中。这其中的奥妙，就在于 <code>delaysTouchesBegan</code> 。 UIScrollView 中有一个 gesture 叫做 <code>UIScrollViewDelayedTouchesBeganGestureRecognizer</code> ，这个 gesture 的 <code>delaysTouchesBegan</code> 属性为 true 。如果我们将其改为 fasle ，你会发现 UIButton 的高亮状态将不再延迟。我们在控制台打印一下 UIScrollView 的手势：</p>
@@ -216,7 +216,7 @@
         
                
             <div class="read-more-item">
-                <span class="read-more-item-dim">更早的文章</span>
+                <span class="read-more-item-dim">以前の記事</span>
                 <h2 class="post-list__post-title post-title"><a href="/2018/10/17/BC架构探索之路/" title="BC架构探索之路">BC架构探索之路</a></h2>
                 <p class="excerpt">
                 
