@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="z">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    
+    <title>选择 GCD 还是 NSTimer ？ | Joey Xu</title>
+    <meta name="renderer" content="webkit">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta name="description" content="Hi, this is Joey, an iOS developer. Welcome to my website!">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="选择 GCD 还是 NSTimer ？ | Joey Xu">
+    <meta name="twitter:description" content="Hi, this is Joey, an iOS developer. Welcome to my website!">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="选择 GCD 还是 NSTimer ？ | Joey Xu">
+    <meta property="og:description" content="Hi, this is Joey, an iOS developer. Welcome to my website!">
+
+    
+    <meta name="author" content="Joey Xu">
+    
+    <link rel="stylesheet" href="/css/vno.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+
+    
+    <link rel="icon" href="/images/avatar-small.png">
+    
+
+    <meta name="generator" content="hexo"/>
+    
+
+    <link rel="canonical" href="http://yoursite.com/2015/06/17/选择GCD还是NSTimer？/"/>
+
+                 
+</head>
+
+<body class="home-template no-js">
+    <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+    <script src="/js/main.js"></script>
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+<header class="panel-cover panel-cover--collapsed" style="background-image: url(/images/background-cover.jpg)">
+  <div class="panel-main">
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/" title="前往 Joey Xu 的主页"><img src="/images/avatar.jpg" width="80" alt="Joey Xu logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage for Joey Xu">Joey Xu</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">大浪淘沙 沉者为金</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Hi, this is Joey, an iOS developer. Welcome to my website!</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+
+        <div class="navigation-wrapper">
+          <div>
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+              <li class="navigation__item"><a href="/#blog" title="Visit the blog" class="blog-button">Blog</a></li>
+            
+            </ul>
+          </nav>
+          </div>
+          <div>
+          <nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  <!-- Weibo-->
+  
+  <li class="navigation__item">
+    <a href="https://weibo.com/Joeyqiushi" title="Weibo" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li> 
+
+
+  <!-- Github -->
+  
+  <li class="navigation__item">
+    <a href="https://github.com/Joeyqiushi" title="GitHub" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+
+
+<!-- Stack Overflow -->
+        
+
+  <!-- Google Plus -->
+  
+
+<!-- Facebook -->
+
+  
+<!-- Twitter -->
+
+  
+
+
+
+  </ul>
+</nav>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay cover-purple"></div>
+  </div> 
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single">
+
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2015-06-16T16:00:00.000Z" class="post-list__meta--date date">2015-06-17</time> &#8226; <span class="post-meta__tags tags">
+  <a class="tag-link" href="/tags/Tech/">Tech</a>
+ </span>
+      <span class="page-pv">
+       Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
+      </span> 
+   
+    </div>
+    <h1 class="post-title">选择 GCD 还是 NSTimer ？</h1>
+  </header>
+
+  <section class="post">
+    <p>我们常常会延迟某件任务的执行，或者让某件任务周期性的执行。然后也会在某些时候需要取消掉之前延迟执行的任务。</p>
+<p>延迟操作的方案一般有三种：</p>
+<h4 id="1-NSObject的方法："><a href="#1-NSObject的方法：" class="headerlink" title="1. NSObject的方法："></a>1. NSObject的方法：</h4><ul>
+<li>(void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay;</li>
+</ul>
+<h4 id="2-使用NSTimer的方法："><a href="#2-使用NSTimer的方法：" class="headerlink" title="2. 使用NSTimer的方法："></a>2. 使用NSTimer的方法：</h4><ul>
+<li>(NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;</li>
+<li>(NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;</li>
+</ul>
+<h4 id="3-使用GCD的方法："><a href="#3-使用GCD的方法：" class="headerlink" title="3. 使用GCD的方法："></a>3. 使用GCD的方法：</h4><p>   void<br>   dispatch_after(dispatch_time_t when, dispatch_queue_t queue, dispatch_block_t block);</p>
+<p>一般情况下，我们选择使用GCD的dispatch_after。</p>
+<p>因为如果不用GCD，编码需要注意以下三个细节：</p>
+<h4 id="1-必须保证有一个活跃的runloop。"><a href="#1-必须保证有一个活跃的runloop。" class="headerlink" title="1. 必须保证有一个活跃的runloop。"></a>1. 必须保证有一个活跃的runloop。</h4><p>performSelector和scheduledTimerWithTimeInterval方法都是基于runloop的。我们知道，当一个应用启动时，系统会开启一个主线程，并且把主线程的runloop激活，也就是run起来，并且主线程的runloop是不会停止的。所以，当这两个方法在主线程可以被正常调用。但情况往往不是这样的。实际编码中，我们更多的逻辑是放在子线程中执行的。而子线程的runloop是默认关闭的。这时如果不手动激活runloop，performSelector和scheduledTimerWithTimeInterval的调用将是无效的。</p>
+<h4 id="2-NSTimer的创建与撤销必须在同一个线程操作、performSelector的创建与撤销必须在同一个线程操作。-因为NSTimer不是线程安全的"><a href="#2-NSTimer的创建与撤销必须在同一个线程操作、performSelector的创建与撤销必须在同一个线程操作。-因为NSTimer不是线程安全的" class="headerlink" title="2. NSTimer的创建与撤销必须在同一个线程操作、performSelector的创建与撤销必须在同一个线程操作。(因为NSTimer不是线程安全的)"></a>2. NSTimer的创建与撤销必须在同一个线程操作、performSelector的创建与撤销必须在同一个线程操作。(因为NSTimer不是线程安全的)</h4><h4 id="3-内存管理有潜在泄露的风险"><a href="#3-内存管理有潜在泄露的风险" class="headerlink" title="3.内存管理有潜在泄露的风险"></a>3.内存管理有潜在泄露的风险</h4><p>scheduledTimerWithTimeInterval方法将target设为A对象时，A对象会被这个timer所持有，也就是会被retain一次，timer会被当前的runloop所持有。performSelector:withObject:afterDelay:方法实际上是在当前线程的runloop里帮你创建的一个timer去执行任务，所以和scheduledTimerWithTimeInterval方法一样会retain其调用对象。但是，我们往往不希望因为这些延迟操作而影响对象的生命周期，更甚至是，导致对象无法释放。举个例子：</p>
+<ul>
+<li><p>(void)fireTimer {<br>  _timer = [NSTimer scheduledTimerWithTimeInterval:2.0</p>
+<pre><code>  target:self
+selector:@selector(doSomething)
+userInfo:nil
+ repeats:YES];
+</code></pre><p>}</p>
+</li>
+<li><p>(void)cancelTimer {<br>  [_timer invalidate];<br>}</p>
+</li>
+</ul>
+<p>你创建的对象X中有一个实例变量_timer，方法fireTimer触发一个timer，方法cancel取消这个timer。在对象X需要销毁的时候，需要将它的timer取消掉。</p>
+<ul>
+<li>(void)dealloc {<br>  [self cancelTimer];<br>}</li>
+</ul>
+<p>gcdTimer<br>不幸的是，dealloc方法将永远不会被调用。因为timer的引用，对象X的引用计数永远不会降到0，dealloc方法也就不会被调用。这时如果不调用cancel，对象X将永远无法释放，造成内存泄露。想想一个对象若不调用某一个方法就会造成内存泄露，这该是多大一个坑。</p>
+<blockquote>
+<p>This method is the only way to remove a timer from an NSRunLoop object. The NSRunLoop object removes its strong reference to the timer, either just before the invalidate method returns or at some later point.</p>
+<p>If it was configured with target and user info objects, the receiver removes its strong references to those objects as well.</p>
+<p>You must send this message from the thread on which the timer was installed. If you send this message from another thread, the input source associated with the timer may not be removed from its run loop, which could prevent the thread from exiting properly.</p>
+</blockquote>
+<p>上面摘自苹果官方文档对invalidate方法的解释。可以看到，当一个timer被schedule的时候，timer会持有target对象，NSRunLoop对象会持有timer。当invalidate被调用时，NSRunLoop对象会释放对timer的持有，timer会释放对target的持有。除此之外，我们没有途径可以释放timer对target的持有。所以解决内存泄露就必须撤销timer，若不撤销，target对象将永远无法释放。</p>
+<p>若使用dispatch_after，系统会帮我们处理线程级的逻辑，这样也我们更易于享受系统对线程所做的优化。除此之外，我们不用关心runloop的问题。并且调用的对象也不会被强行持有，这样上述的内存问题也不复存在。当然，需要注意block会持有其传入的对象，但这可以通过weakself解决。所以在这种延迟操作方案中，使用dispatch_after更佳。</p>
+<p>但是呢，dispatch_after有个致命的弱点：dispatch_after一旦执行后，就不能撤销了。而performSelector可以使用cancelPreviousPerformRequestsWithTarget方法撤销，NSTimer也可以调用invalidate进行撤销。（注意：撤销任务与创建timer任务必须在同一个线程，即同一个runloop）所以我们还是得用NSTimer或者performSelector吗？</p>
+<p>NO，其实GCD也有timer的功能。用GCD来实现一个timer：</p>
+<p>   // 拿到一个队列<br>   dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);<br>   // 创建一个timer放到队列里面<br>   dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);<br>   // 设置timer的首次执行时间、执行时间间隔、间隔精确度<br>   dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 2.0 <em> NSEC_PER_SEC, 0.1 </em> NSEC_PER_SEC);<br>   // 设置timer执行的事件<br>   __weak typeof(self) weakSelf = self;<br>   dispatch_source_set_event_handler(timer, ^{<br>       [weakSelf doSomething];<br>   });<br>   // 激活timer<br>   dispatch_resume(timer);</p>
+<p>   // 取消timer<br>   dispatch_source_cancel(timer);</p>
+<p>这样我们就规避了NSTimer的三个缺陷。</p>
+<p>到这里问题基本得到了解决，但是我们还可以做的更好:)</p>
+<p>1.GCD的timer使用的API比较冗余，每次使用都会copy代码。2.没有repeats的选项，若只想执行一次还得自己写标记位控制。这些问题我们都可以封装成一个统一的API：</p>
+<ul>
+<li><p>(void)scheduledDispatchTimerWithName:(NSString *)timerName</p>
+<pre><code> timeInterval:(double)interval
+        queue:(dispatch_queue_t)queue
+      repeats:(BOOL)repeats
+fireInstantly:(BOOL)fireInstantly
+       action:(dispatch_block_t)dispatchBlock {
+</code></pre><p>  if (!timerName || timerName.length == 0 || !dispatchBlock) return;</p>
+<p>  if (nil == queue)</p>
+<pre><code>queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+</code></pre><p>  dispatch_barrier_async(self.queue, ^{</p>
+<pre><code>dispatch_source_t timer = [self.timerContainer objectForKey:timerName];
+if (!timer) {
+    timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+    [self.timerContainer setObject:timer forKey:timerName];
+    dispatch_resume(timer);
+}
+
+if (repeats &amp;&amp; fireInstantly) {
+    dispatch_async(queue, dispatchBlock);
+}
+
+dispatch_source_set_timer(timer, dispatch_time(DISPATCH_TIME_NOW, interval * NSEC_PER_SEC), interval * NSEC_PER_SEC, 0.01 * NSEC_PER_SEC);
+dispatch_source_set_event_handler(timer, ^{
+    if (!repeats) {
+        [self.timerContainer removeObjectForKey:timerName];
+        dispatch_source_cancel(timer);
+    }
+
+    dispatchBlock();
+});
+</code></pre><p>  });<br>}</p>
+</li>
+<li><p>(void)cancelTimerWithName:(NSString *)timerName {<br>  dispatch_barrier_async(self.queue, ^{</p>
+<pre><code>dispatch_source_t timer = [self.timerContainer objectForKey:timerName];
+
+if (!timer) {
+    return;
+}
+
+[self.timerContainer removeObjectForKey:timerName];
+dispatch_source_cancel(timer);
+</code></pre><p>  });<br>}</p>
+</li>
+</ul>
+<p>这样，外部只需调用这个两个接口，用起来和NSTimer一样方便！</p>
+<p>   [[JX_GCDTimerManager sharedInstance]  cancelTimerWithName:@”myTime_hash”];<br>   __weak typeof(self) weakSelf = self;<br>   [[JX_GCDTimerManager sharedInstance] scheduledDispatchTimerWithName:@”myTime_hash”<br>                                                          timeInterval:2.0<br>                                                                 queue:dispatch_get_main_queue()<br>                                                               repeats:NO<br>                                                         fireInstantly:NO<br>                                                                action:^{<br>                                                                    [weakSelf doSomething];<br>                                                                }];</p>
+<p>上面的代码就创建了一个名叫myTimer的timer，这个timer将在2 seconds后执行一个block，随后timer自动停止并被释放。当然，如果repeats参数传入的是YES，那么这么timer会一个周期接一个周期的执行，直到你cancel掉这个timer。</p>
+<p>当然，你可以在self对象的dealloc方法里面做cancel，这样保证了timer恰好运行于整个对象的生命周期中。这是NSTimer和performSelector所做不到的事情。你也可以通过queue参数控制这个timer所添加到的线程，也就是action最终执行的线程。传入nil则会默认放到子线程中执行。UI相关的操作需要传入dispatch_get_main_queue()以放到主线程中执行。</p>
+<p>详细的实现，见git源码。</p>
+<p>综上，选择使用GCD的技术有助于我们提高代码的健壮性与稳定性。</p>
+<p>注：文中若有错误，恭请斧正哈！：)</p>
+<p><a href="https://github.com/Joeyqiushi/JX_GCDTimer" target="_blank" rel="noopener">Git源码</a></p>
+
+  </section>
+
+</article>
+
+<section class="read-more">
+           
+    
+               
+            <div class="read-more-item">
+                <span class="read-more-item-dim">Newer Post</span>
+                <h2 class="post-list__post-title post-title"><a href="/2015/08/01/NSDateFormatter最佳实践/" title="NSDateFormatter最佳实践">NSDateFormatter最佳实践</a></h2>
+                <p class="excerpt">
+                
+                本文介绍NSDateFormatter的性能瓶颈，以及如何解决性能问题。
+
+分别用NSDateFormatter和C的localtime()方法去将时间转化成一个可读的字符串。转化1024*10次，然后对比时间。注：localtime()有不可重入和线程安全的问题，可用localtime_r替换。1
+                &hellip;
+                </p>
+                <div class="post-list__meta"><time datetime="2015-07-31T16:00:00.000Z" class="post-list__meta--date date">2015-08-01</time> &#8226; <span class="post-list__meta--tags tags">于 
+  <a class="tag-link" href="/tags/Tech/">Tech</a>
+</span><a class="btn-border-small" href="/2015/08/01/NSDateFormatter最佳实践/">继续阅读</a></div>
+                           
+            </div>
+        
+        
+        
+     
+   
+   
+  
+</section>
+
+  
+
+
+            <footer class="footer">
+    <span class="footer__copyright">
+        &copy; 2020 Joey Xu - 本站点采用 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>
+       
+    </span>
+    <span class="footer__copyright">
+             - 基于 <a href="http://hexo.io">Hexo</a> 搭建，使用 <a href="https://github.com/monniya/hexo-theme-new-vno ">new-vno</a> 主题，由<a href="https://monniya.com ">@Monniya</a> 修改自 <a href="https://github.com/lenbo-ma/hexo-theme-vno" target="_blank">Vno</a>, 原创出自<a href="http://github.com/onevcat/vno" target="_blank">onevcat</a>
+         </span>
+       
+    
+    
+</footer>
+
+
+        </div>
+    </div>
+
+     
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-78918255-1', 'auto');
+	ga('send', 'pageview');
+</script>
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?9cdad07c755fa23f6aced510c6760e87";
+            var s = document.getElementsByTagName("script")[0]; 
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+
+
+    <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    
+</body>
+</html>

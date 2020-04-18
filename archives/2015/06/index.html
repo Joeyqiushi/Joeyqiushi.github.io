@@ -35,7 +35,7 @@
     <meta name="generator" content="hexo"/>
     
 
-    <link rel="canonical" href="http://yoursite.com/2020/04/17/选择GCD还是NSTimer？/"/>
+    <link rel="canonical" href="http://yoursite.com"/>
 
                  
 </head>
@@ -127,53 +127,52 @@
 
     <div class="content-wrapper">
         <div class="content-wrapper__inner">
-            <article class="post-container post-container--single">
-
-  <header class="post-header">
-    <div class="post-meta">
-      <time datetime="2020-04-17T15:07:35.974Z" class="post-list__meta--date date">2020-04-17</time> &#8226; <span class="post-meta__tags tags"> </span>
-      <span class="page-pv">
-       Read <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span>
-      </span> 
-   
-    </div>
-    <h1 class="post-title"></h1>
-  </header>
-
-  <section class="post">
+            <div class="main-post-list">
     
-  </section>
-
-</article>
-
-<section class="read-more">
-           
+  <ol class="post-list">
+  
     
-        
-        
-               
-            <div class="read-more-item">
-                <span class="read-more-item-dim">Older Post</span>
-                <h2 class="post-list__post-title post-title"><a href="/2018/11/06/UIGesture和UIControl的前世今缘/" title="UIGesture和UIControl的前世今缘">UIGesture和UIControl的前世今缘</a></h2>
-                <p class="excerpt">
-                
-                最近发现很多同学都搞不清楚 UIGesture 和 UIControl 的正确使用姿势。即便是做了多年 iOS 开发的 senior engineer 也搞不清楚这整个脉络。于是我决定写一篇文章阐述一下这其中的奥妙。
-一般来说，我们使用 UIGesture 和 UIControl 的场景大多比较简单
-                &hellip;
-                </p>
-                <div class="post-list__meta"><time datetime="2018-11-05T16:00:00.000Z" class="post-list__meta--date date">2018-11-06</time> &#8226; <span class="post-list__meta--tags tags">于 
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2015/06/17/选择GCD还是NSTimer？/" title="link to post.title">选择 GCD 还是 NSTimer ？</a></h2>
+      <p class="excerpt">
+    
+      我们常常会延迟某件任务的执行，或者让某件任务周期性的执行。然后也会在某些时候需要取消掉之前延迟执行的任务。
+延迟操作的方案一般有三种：
+1. NSObject的方法：
+(void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay;
+
+2. 使用NSTi
+    &hellip;
+      </p>
+      <div class="post-list__meta"><time datetime="2015-06-16T16:00:00.000Z" class="post-list__meta--date date">2015-06-17</time> &#8226; <span class="post-list__meta--tags tags">
   <a class="tag-link" href="/tags/Tech/">Tech</a>
-</span><a class="btn-border-small" href="/2018/11/06/UIGesture和UIControl的前世今缘/">继续阅读</a></div>
-                       
-            </div>
-        
-     
-   
-   
+</span><a class="btn-border-small" href="/2015/06/17/选择GCD还是NSTimer？/">继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
   
-</section>
+    
+  </ol>
 
-  
+
+ <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    }); 
+    
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</div>
 
 
             <footer class="footer">
